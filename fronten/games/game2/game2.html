@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Shooter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0a0a2a, #1a1a40);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #4cc9f0;
+            border-radius: 8px;
+            box-shadow: 0 0 20px #4cc9f0, inset 0 0 20px rgba(76, 201, 240, 0.2);
+            overflow: hidden;
+        }
+        
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .ui-panel {
+            background: rgba(10, 10, 42, 0.8);
+            border: 2px solid #4cc9f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+        }
+        
+        #score-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        #health-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        #health-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, #ff3860, #ff4700);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        
+        #main-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: auto;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #4cc9f0;
+            color: #fff;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #4cc9f0, #3a0ca3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            pointer-events: auto;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+        }
+        
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            pointer-events: auto;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        #instructions {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="ui-container">
+            <div id="score-panel" class="ui-panel">
+                <h2>Score: <span id="score">0</span></h2>
+                <div id="health-bar">
+                    <div id="health-fill"></div>
+                </div>
+            </div>
+            
+            <div id="main-menu" class="ui-panel">
+                <h1>SPACE SHOOTER</h1>
+                <button id="start-button">START GAME</button>
+                <div id="instructions">
+                    <p>Use ← → keys to move, SPACE to shoot</p>
+                    <p>Destroy asteroids and avoid enemies!</p>
+                </div>
+            </div>
+            
+            <div id="game-over" class="ui-panel">
+                <h1>GAME OVER</h1>
+                <h2>Final Score: <span id="final-score">0</span></h2>
+                <button id="restart-button">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Constants and Variables
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const finalScoreElement = document.getElementById('final-score');
+        const healthFillElement = document.getElementById('health-fill');
+        const mainMenu = document.getElementById('main-menu');
+        const gameOverScreen = document.getElementById('game-over');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        
+        canvas.width = 800;
+        canvas.height = 600;
+        
+        let gameActive = false;
+        let score = 0;
+        let playerHealth = 100;
+        let animationId;
+        
+        // Player Object
+        const player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 100,
+            width: 50,
+            height: 70,
+            speed: 8,
+            color: '#4cc9f0',
+            shootCooldown: 0,
+            draw() {
+                // Draw player ship with gradient
+                const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
+                gradient.addColorStop(0, '#4cc9f0');
+                gradient.addColorStop(1, '#3a0ca3');
+                
+                ctx.fillStyle = gradient;
+                
+                // Ship shape
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.width / 2, this.y);
+                ctx.lineTo(this.x + this.width, this.y + this.height);
+                ctx.lineTo(this.x, this.y + this.height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Engine glow
+                ctx.fillStyle = '#ff3860';
+                ctx.beginPath();
+                ctx.ellipse(this.x + this.width / 2, this.y + this.height + 5, 8, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+            },
+            update() {
+                if (this.shootCooldown > 0) {
+                    this.shootCooldown--;
+                }
+            }
+        };
+        
+        // Projectiles Array
+        const projectiles = [];
+        
+        // Enemies Array
+        const enemies = [];
+        
+        // Particles Array
+        const particles = [];
+        
+        // Background Stars
+        const stars = [];
+        
+        // Create background stars
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5,
+                speed: Math.random() * 0.5 + 0.2,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+        
+        // Draw background with stars
+        function drawBackground() {
+            ctx.fillStyle = '#0a0a2a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                ctx.fill();
+                
+                // Move stars
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            });
+        }
+        
+        // Input Handling
+        const keys = {
+            ArrowLeft: false,
+            ArrowRight: false,
+            space: false
+        };
+        
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') keys.ArrowLeft = true;
+            if (e.key === 'ArrowRight') keys.ArrowRight = true;
+            if (e.key === ' ') keys.space = true;
+        });
+        
+        window.addEventListener('keyup', e => {
+            if (e.key === 'ArrowLeft') keys.ArrowLeft = false;
+            if (e.key === 'ArrowRight') keys.ArrowRight = false;
+            if (e.key === ' ') keys.space = false;
+        });
+        
+        // Create projectiles
+        function shoot() {
+            if (player.shootCooldown === 0) {
+                projectiles.push({
+                    x: player.x + player.width / 2 - 2.5,
+                    y: player.y,
+                    width: 5,
+                    height: 15,
+                    speed: 10,
+                    color: '#4cc9f0'
+                });
+                
+                player.shootCooldown = 15;
+            }
+        }
+        
+        // Create particles for explosions
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    radius: Math.random() * 3 + 1,
+                    color: color,
+                    speed: Math.random() * 3 + 1,
+                    angle: Math.random() * Math.PI * 2,
+                    life: 30
+                });
+            }
+        }
+        
+        // Create enemies
+        function spawnEnemy() {
+            const radius = Math.random() * 25 + 10;
+            const x = Math.random() * (canvas.width - radius * 2) + radius;
+            
+            enemies.push({
+                x: x,
+                y: -radius,
+                radius: radius,
+                color: `hsl(${Math.random() * 360}, 50%, 50%)`,
+                speed: Math.random() * 2 + 1,
+                type: Math.random() > 0.5 ? 'asteroid' : 'enemy'
+            });
+        }
+        
+        // Check collisions
+        function checkCollisions() {
+            // Projectile-enemy collisions
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const p = projectiles[i];
+                    const e = enemies[j];
+                    
+                    const dx = p.x - e.x;
+                    const dy = p.y - e.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < e.radius + p.width / 2) {
+                        // Collision detected
+                        createParticles(e.x, e.y, e.color, 20);
+                        
+                        // Remove projectile and enemy
+                        projectiles.splice(i, 1);
+                        enemies.splice(j, 1);
+                        
+                        // Increase score
+                        score += 10;
+                        scoreElement.textContent = score;
+                        
+                        break;
+                    }
+                }
+            }
+            
+            // Player-enemy collisions
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const e = enemies[i];
+                
+                const dx = player.x + player.width / 2 - e.x;
+                const dy = player.y + player.height / 2 - e.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < e.radius + player.width / 2) {
+                    // Collision detected
+                    createParticles(e.x, e.y, e.color, 30);
+                    
+                    // Remove enemy
+                    enemies.splice(i, 1);
+                    
+                    // Decrease player health
+                    playerHealth -= 10;
+                    healthFillElement.style.width = playerHealth + '%';
+                    
+                    if (playerHealth <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+        }
+        
+        // Game over function
+        function gameOver() {
+            gameActive = false;
+            gameOverScreen.style.display = 'block';
+            finalScoreElement.textContent = score;
+            cancelAnimationFrame(animationId);
+        }
+        
+        // Start game function
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            playerHealth = 100;
+            healthFillElement.style.width = '100%';
+            scoreElement.textContent = '0';
+            mainMenu.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            
+            // Clear arrays
+            projectiles.length = 0;
+            enemies.length = 0;
+            particles.length = 0;
+            
+            // Reset player position
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - 100;
+            
+            // Start game loop
+            gameLoop();
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            // Clear canvas
+            drawBackground();
+            
+            // Update player
+            if (keys.ArrowLeft && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys.ArrowRight && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+            if (keys.space) {
+                shoot();
+            }
+            
+            player.update();
+            player.draw();
+            
+            // Update projectiles
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                const p = projectiles[i];
+                p.y -= p.speed;
+                
+                // Draw projectile with glow effect
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.rect(p.x, p.y, p.width, p.height);
+                ctx.fill();
+                
+                // Remove if off screen
+                if (p.y + p.height < 0) {
+                    projectiles.splice(i, 1);
+                }
+            }
+            
+            // Spawn enemies
+            if (Math.random() < 0.03) {
+                spawnEnemy();
+            }
+            
+            // Update enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const e = enemies[i];
+                e.y += e.speed;
+                
+                // Draw enemy
+                ctx.fillStyle = e.color;
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Remove if off screen
+                if (e.y - e.radius > canvas.height) {
+                    enemies.splice(i, 1);
+                }
+            }
+            
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
+                p.life--;
+                
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 30;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.globalAlpha = 1;
+                
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Continue game loop
+            animationId = requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners for buttons
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        
+        // Draw initial screen
+        drawBackground();
+        player.draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+body{
+    margin: 0;
+    background-color: #c7f8f8;
+}
+.main{
+    width: 100%;
+    height: 50vmin;
+    display: flex;
+}
+.sub_main.first{
+    width: 70%;
+    height: 45vmin;
+    background-color:#ffffffc3;
+    margin: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.main-image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.main-responsive-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease-in-out;
+    max-width: 100%;
+    display: block;
+}
+
+.main-image-container:hover .main-responsive-image {
+    transform: scale(1.03);
+}
+
+.sub_main.second{
+    width: 40%;
+    height: 45vmin;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.first_sec {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2vmin;
+    margin-bottom: 2vmin;
+}
+.activity{
+    height: 18vmin;
+    width: 18vmin;
+    border-radius: 50%;
+    background-color: #B4C5E4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 3px;
+    position: relative;
+}
+nav{
+    height: 12vmin;
+    background-color: #88f6fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+.nav_btn{
+    font-family: sans-serif;
+    width: 12vmin;
+    text-align: left;
+    font-size: 3vmin;
+    margin-left: 10px;
+}
+#search_bar{
+    width: 30vmin;
+    border: none;
+    height: 6vmin;
+    border-radius: 6px;
+    padding-left: 5px;
+    font-size: 3vmin;
+    margin-right: 10px;
+}
+#search_btn{
+    border: none;
+    height: 6vmin;
+    border-radius: 5px;
+    margin-right: 10px;
+    width: 12vmin;
+    font-size: 3vmin;
+    cursor: pointer;
+    background-color: white;
+}
+.hamburger{
+    width: 5vmin;
+    height: 5vmin;
+    font-size: 5vmin;
+    text-align: center;
+    cursor: pointer; 
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    margin-left: 5px;
+    margin-right: 5vmin;
+    user-select: none;
+}
+.nav_links {
+    list-style: none;
+    display: flex;
+    gap: 2vmin;
+}
+.section_row{
+    width: 100%;
+    height: 60vmin;
+    display: flex;
+}
+section{
+    margin-bottom: 1vmin;
+}
+.section_row > .data{
+    width: 50%;
+    height: 58vmin;
+    background-color: rgb(255, 255, 255);
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    margin: 1vmin;
+}
+.slides{
+    width: 100%;
+    height: 60vmin;
+    background-color: white;
+}
+#footer{
+    width: 100%;
+    height: 70vmin;
+    background-color:white;
+    margin-top: 2vmin;
+}
+
+/* for progress circles */
+ .progress-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .progress-ring__circle {
+            stroke-width: 6;
+            fill: transparent;
+            r: 45%;
+            cx: 50%;
+            cy: 50%;
+            stroke-linecap: round;
+        }
+
+        .progress-ring__background {
+            stroke: #e9ecef;
+        }
+
+        .progress-ring__progress {
+            stroke-dasharray: 326.73;
+            stroke-dashoffset: 326.73;
+            transition: stroke-dashoffset 2s ease-in-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+          /* Progress colors */
+        .progress-75 { stroke: #28a745; }
+        .progress-38 { stroke: #ffc107; }
+        .progress-96 { stroke: #17a2b8; }
+        .progress-91 { stroke: #6f42c1; }
+
+
+        /* for games */
+         .game-img {
+            height: 160px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3rem;
+        }
+
+         .game-content {
+            padding: 1.5rem;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .game-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive image styles */
+        .data .image-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .data .responsive-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .data .image-link:hover .responsive-image {
+            transform: scale(1.05);
+        }
+
+        .data {
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .data:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            padding: 15px;
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+            background-color: #ffffff;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 0.85rem;
+        }

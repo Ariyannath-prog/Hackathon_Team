@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar Odyssey - 3D Space Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .hud {
+            position: absolute;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            pointer-events: none;
+        }
+        
+        #speed {
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+        }
+        
+        #health {
+            top: 50px;
+            left: 20px;
+            font-size: 18px;
+        }
+        
+        #score {
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+        }
+        
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ff00;
+        }
+        
+        #crosshair::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: #00ff00;
+            border-radius: 50%;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ffff;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="ui">
+            <div id="speed" class="hud">Speed: 0</div>
+            <div id="health" class="hud">Hull: 100%</div>
+            <div id="score" class="hud">Score: 0</div>
+            <div id="crosshair"></div>
+            <div id="instructions">
+                WASD: Move | Mouse: Look | Click: Shoot | R: Boost
+            </div>
+        </div>
+        <div id="loading" class="loading">
+            <div>STELLAR ODYSSEY</div>
+            <div style="font-size: 16px; margin-top: 20px;">Initializing quantum drive...</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        class StellarOdyssey {
+            constructor() {
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                
+                this.setupRenderer();
+                this.setupLighting();
+                this.setupPlayer();
+                this.setupControls();
+                this.setupParticles();
+                this.setupEnemies();
+                this.setupUI();
+                
+                this.gameState = {
+                    speed: 0,
+                    health: 100,
+                    score: 0,
+                    boost: false
+                };
+                
+                this.keys = {};
+                this.mousePosition = { x: 0, y: 0 };
+                this.bullets = [];
+                this.enemies = [];
+                this.explosions = [];
+                
+                this.startGame();
+            }
+            
+            setupRenderer() {
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x000011, 1);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.renderer.toneMapping = THREE.ReinhardToneMapping;
+                this.renderer.toneMappingExposure = 2.3;
+                document.getElementById('gameContainer').appendChild(this.renderer.domElement);
+            }
+            
+            setupLighting() {
+                // Ambient light
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+                this.scene.add(ambientLight);
+                
+                // Main directional light
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                directionalLight.position.set(-1, 1, 1);
+                directionalLight.castShadow = true;
+                directionalLight.shadow.mapSize.width = 2048;
+                directionalLight.shadow.mapSize.height = 2048;
+                this.scene.add(directionalLight);
+                
+                // Point lights for atmosphere
+                const pointLight1 = new THREE.PointLight(0x00ffff, 0.8, 100);
+                pointLight1.position.set(10, 10, 10);
+                this.scene.add(pointLight1);
+                
+                const pointLight2 = new THREE.PointLight(0xff0080, 0.6, 80);
+                pointLight2.position.set(-10, -10, -10);
+                this.scene.add(pointLight2);
+            }
+            
+            setupPlayer() {
+                // Create spaceship geometry
+                const shipGeometry = new THREE.Group();
+                
+                // Main body
+                const bodyGeometry = new THREE.ConeGeometry(0.5, 3, 8);
+                const bodyMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x888888,
+                    shininess: 100,
+                    specular: 0x444444
+                });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                body.rotation.x = Math.PI / 2;
+                shipGeometry.add(body);
+                
+                // Wings
+                const wingGeometry = new THREE.BoxGeometry(2, 0.1, 1);
+                const wingMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x666666,
+                    shininess: 80
+                });
+                const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+                leftWing.position.set(-0.5, 0, -0.5);
+                const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+                rightWing.position.set(0.5, 0, -0.5);
+                shipGeometry.add(leftWing);
+                shipGeometry.add(rightWing);
+                
+                // Engine glow
+                const engineGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+                const engineMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00aaff,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const engine = new THREE.Mesh(engineGeometry, engineMaterial);
+                engine.position.z = -1.5;
+                shipGeometry.add(engine);
+                
+                this.player = shipGeometry;
+                this.scene.add(this.player);
+                
+                this.camera.position.set(0, 2, 5);
+                this.camera.lookAt(0, 0, 0);
+            }
+            
+            setupControls() {
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.code.toLowerCase()] = true;
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.code.toLowerCase()] = false;
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    this.mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+                
+                document.addEventListener('click', () => {
+                    this.shoot();
+                });
+                
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+            
+            setupParticles() {
+                // Star field
+                const starGeometry = new THREE.BufferGeometry();
+                const starCount = 10000;
+                const positions = new Float32Array(starCount * 3);
+                
+                for (let i = 0; i < starCount * 3; i++) {
+                    positions[i] = (Math.random() - 0.5) * 2000;
+                }
+                
+                starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const starMaterial = new THREE.PointsMaterial({
+                    color: 0xffffff,
+                    size: Math.random() * 2 + 1,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                this.stars = new THREE.Points(starGeometry, starMaterial);
+                this.scene.add(this.stars);
+                
+                // Nebula particles
+                this.createNebula();
+            }
+            
+            createNebula() {
+                const nebulaGeometry = new THREE.BufferGeometry();
+                const nebulaCount = 500;
+                const positions = new Float32Array(nebulaCount * 3);
+                const colors = new Float32Array(nebulaCount * 3);
+                
+                for (let i = 0; i < nebulaCount; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * 1000;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 1000;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+                    
+                    const color = new THREE.Color();
+                    color.setHSL(Math.random() * 0.3 + 0.6, 0.8, 0.5);
+                    colors[i * 3] = color.r;
+                    colors[i * 3 + 1] = color.g;
+                    colors[i * 3 + 2] = color.b;
+                }
+                
+                nebulaGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                nebulaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                
+                const nebulaMaterial = new THREE.PointsMaterial({
+                    size: 10,
+                    transparent: true,
+                    opacity: 0.3,
+                    vertexColors: true,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.nebula = new THREE.Points(nebulaGeometry, nebulaMaterial);
+                this.scene.add(this.nebula);
+            }
+            
+            setupEnemies() {
+                this.spawnTimer = 0;
+            }
+            
+            setupUI() {
+                this.speedUI = document.getElementById('speed');
+                this.healthUI = document.getElementById('health');
+                this.scoreUI = document.getElementById('score');
+            }
+            
+            startGame() {
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    this.gameLoop();
+                }, 2000);
+            }
+            
+            updatePlayer() {
+                const speed = this.keys['keyr'] ? 0.3 : 0.15;
+                this.gameState.boost = this.keys['keyr'];
+                
+                // Movement
+                if (this.keys['keyw']) this.player.position.z -= speed;
+                if (this.keys['keys']) this.player.position.z += speed;
+                if (this.keys['keya']) this.player.position.x -= speed;
+                if (this.keys['keyd']) this.player.position.x += speed;
+                
+                // Mouse look
+                this.player.rotation.y = -this.mousePosition.x * 0.5;
+                this.player.rotation.x = this.mousePosition.y * 0.3;
+                
+                // Camera follow
+                const targetX = this.player.position.x;
+                const targetZ = this.player.position.z + 5;
+                this.camera.position.x += (targetX - this.camera.position.x) * 0.1;
+                this.camera.position.z += (targetZ - this.camera.position.z) * 0.1;
+                
+                // Update speed display
+                const currentSpeed = Math.sqrt(
+                    Math.pow(this.player.position.x - (this.lastPlayerPos?.x || 0), 2) +
+                    Math.pow(this.player.position.z - (this.lastPlayerPos?.z || 0), 2)
+                ) * 100;
+                
+                this.gameState.speed = Math.floor(currentSpeed);
+                this.lastPlayerPos = { x: this.player.position.x, z: this.player.position.z };
+            }
+            
+            shoot() {
+                const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const bulletMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00ff00,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+                bullet.position.copy(this.player.position);
+                bullet.position.y += 0.5;
+                
+                // Add bullet trail effect
+                const trailGeometry = new THREE.CylinderGeometry(0.02, 0.1, 2, 8);
+                const trailMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00ff00,
+                    transparent: true,
+                    opacity: 0.5
+                });
+                const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+                bullet.add(trail);
+                
+                this.scene.add(bullet);
+                this.bullets.push({
+                    mesh: bullet,
+                    velocity: new THREE.Vector3(
+                        Math.sin(this.player.rotation.y) * -0.8,
+                        0,
+                        Math.cos(this.player.rotation.y) * -0.8
+                    ),
+                    life: 100
+                });
+            }
+            
+            spawnEnemy() {
+                const enemyGeometry = new THREE.OctahedronGeometry(1, 0);
+                const enemyMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xff3333,
+                    shininess: 100,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+                
+                // Spawn randomly around the player
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 30;
+                enemy.position.set(
+                    this.player.position.x + Math.cos(angle) * distance,
+                    Math.random() * 10 - 5,
+                    this.player.position.z + Math.sin(angle) * distance
+                );
+                
+                // Add enemy glow
+                const glowGeometry = new THREE.SphereGeometry(1.5, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xff0000,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                enemy.add(glow);
+                
+                this.scene.add(enemy);
+                this.enemies.push({
+                    mesh: enemy,
+                    health: 3,
+                    speed: 0.05 + Math.random() * 0.05
+                });
+            }
+            
+            updateEnemies() {
+                this.spawnTimer++;
+                if (this.spawnTimer > 60) {
+                    this.spawnEnemy();
+                    this.spawnTimer = 0;
+                }
+                
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.enemies[i];
+                    
+                    // Move toward player
+                    const direction = new THREE.Vector3()
+                        .subVectors(this.player.position, enemy.mesh.position)
+                        .normalize();
+                    
+                    enemy.mesh.position.add(direction.multiplyScalar(enemy.speed));
+                    enemy.mesh.rotation.x += 0.02;
+                    enemy.mesh.rotation.y += 0.03;
+                    
+                    // Check collision with player
+                    const distToPlayer = enemy.mesh.position.distanceTo(this.player.position);
+                    if (distToPlayer < 2) {
+                        this.gameState.health -= 10;
+                        this.createExplosion(enemy.mesh.position);
+                        this.scene.remove(enemy.mesh);
+                        this.enemies.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // Remove if too far
+                    if (distToPlayer > 200) {
+                        this.scene.remove(enemy.mesh);
+                        this.enemies.splice(i, 1);
+                    }
+                }
+            }
+            
+            updateBullets() {
+                for (let i = this.bullets.length - 1; i >= 0; i--) {
+                    const bullet = this.bullets[i];
+                    
+                    bullet.mesh.position.add(bullet.velocity);
+                    bullet.life--;
+                    
+                    // Check collision with enemies
+                    for (let j = this.enemies.length - 1; j >= 0; j--) {
+                        const enemy = this.enemies[j];
+                        const distance = bullet.mesh.position.distanceTo(enemy.mesh.position);
+                        
+                        if (distance < 1.5) {
+                            enemy.health--;
+                            this.scene.remove(bullet.mesh);
+                            this.bullets.splice(i, 1);
+                            
+                            if (enemy.health <= 0) {
+                                this.gameState.score += 100;
+                                this.createExplosion(enemy.mesh.position);
+                                this.scene.remove(enemy.mesh);
+                                this.enemies.splice(j, 1);
+                            }
+                            break;
+                        }
+                    }
+                    
+                    // Remove old bullets
+                    if (bullet.life <= 0) {
+                        this.scene.remove(bullet.mesh);
+                        this.bullets.splice(i, 1);
+                    }
+                }
+            }
+            
+            createExplosion(position) {
+                const particleCount = 50;
+                const particles = [];
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particleGeometry = new THREE.SphereGeometry(0.1, 4, 4);
+                    const particleMaterial = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color().setHSL(Math.random() * 0.1 + 0.1, 1, 0.5)
+                    });
+                    
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.copy(position);
+                    
+                    const velocity = new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.4,
+                        (Math.random() - 0.5) * 0.4,
+                        (Math.random() - 0.5) * 0.4
+                    );
+                    
+                    this.scene.add(particle);
+                    particles.push({
+                        mesh: particle,
+                        velocity: velocity,
+                        life: 30
+                    });
+                }
+                
+                this.explosions.push(particles);
+            }
+            
+            updateExplosions() {
+                for (let i = this.explosions.length - 1; i >= 0; i--) {
+                    const explosion = this.explosions[i];
+                    
+                    for (let j = explosion.length - 1; j >= 0; j--) {
+                        const particle = explosion[j];
+                        particle.mesh.position.add(particle.velocity);
+                        particle.velocity.multiplyScalar(0.98);
+                        particle.life--;
+                        
+                        particle.mesh.material.opacity = particle.life / 30;
+                        
+                        if (particle.life <= 0) {
+                            this.scene.remove(particle.mesh);
+                            explosion.splice(j, 1);
+                        }
+                    }
+                    
+                    if (explosion.length === 0) {
+                        this.explosions.splice(i, 1);
+                    }
+                }
+            }
+            
+            updateParticles() {
+                // Rotate stars
+                this.stars.rotation.y += 0.0005;
+                
+                // Animate nebula
+                this.nebula.rotation.x += 0.0002;
+                this.nebula.rotation.z += 0.0001;
+            }
+            
+            updateUI() {
+                this.speedUI.textContent = `Speed: ${this.gameState.speed}`;
+                this.healthUI.textContent = `Hull: ${Math.max(0, this.gameState.health)}%`;
+                this.scoreUI.textContent = `Score: ${this.gameState.score}`;
+                
+                // Health warning effect
+                if (this.gameState.health < 30) {
+                    this.healthUI.style.color = '#ff0000';
+                    this.healthUI.style.animation = 'blink 0.5s infinite';
+                } else {
+                    this.healthUI.style.color = '#00ffff';
+                    this.healthUI.style.animation = 'none';
+                }
+            }
+            
+            gameLoop() {
+                if (this.gameState.health <= 0) {
+                    alert(`Game Over! Final Score: ${this.gameState.score}`);
+                    location.reload();
+                    return;
+                }
+                
+                this.updatePlayer();
+                this.updateEnemies();
+                this.updateBullets();
+                this.updateExplosions();
+                this.updateParticles();
+                this.updateUI();
+                
+                this.renderer.render(this.scene, this.camera);
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+        
+        // Add CSS animation for health warning
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0.3; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Start the game
+        window.addEventListener('load', () => {
+            new StellarOdyssey();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Game</title>
+  <link rel="stylesheet" href="style4.css"> 
+</head>
+<body>
+
+  <!-- Start Page -->
+  <div class="container" id="startPage">
+    <h1>Welcome to the Game</h1>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <!-- Game Page -->
+  <div class="container hidden" id="gamePage">
+    <h2>Choose the correct Answer</h2>
+    <div class="game-layout">
+      <div class="left">
+        <img src="./img1.jpg" alt="Image 1">
+      </div>
+      <div class="right">
+        <img src="./img3.jpg" alt="Image 2" onclick="checkAnswer(2)">
+        <img src="./img2.jpg" alt="Image 3" onclick="checkAnswer(3)">
+      </div>
+    </div>
+    <div class="message" id="message"></div>
+    <button id="nextBtn" class="hidden" onclick="nextLevel()">Next Level</button>
+  </div>
+  <script src="script4.js"></script>
+</body>
+</html>

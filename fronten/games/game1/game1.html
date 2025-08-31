@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quest Adventure</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="game-title">🏆 Math Quest Adventure 🏆</h1>
+            <div class="game-instructions">
+                🎯 Solve mathematical challenges to unlock new levels! Each correct answer earns you points and unlocks the next adventure. Good luck, Math Explorer! 🚀
+            </div>
+            <div class="score-board">
+                <div class="score-item">
+                    <div>🏅 Score</div>
+                    <div id="score">0</div>
+                </div>
+                <div class="score-item">
+                    <div>⭐ Level</div>
+                    <div id="current-level">1</div>
+                </div>
+                <div class="score-item">
+                    <div>💎 Gems</div>
+                    <div id="gems">0</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </header>
+
+        <main class="level-map" id="level-map">
+            <!-- Levels will be dynamically generated here -->
+        </main>
+    </div>
+
+    <!-- Problem Modal -->
+    <div class="problem-modal" id="problem-modal">
+        <div class="problem-content">
+            <button class="close-btn" onclick="closeProblem()">✕ Close</button>
+            <h2 id="problem-title" style="color: white; margin-bottom: 20px;"></h2>
+            <div id="problem-text" class="problem-text"></div>
+            <div id="problem-visual" style="margin: 20px 0;"></div>
+            <div id="input-section">
+                <input type="number" id="answer-input" class="answer-input" placeholder="Your answer">
+                <br>
+                <button class="submit-btn" onclick="checkAnswer()">🎯 Submit Answer</button>
+                <button class="hint-btn" onclick="showHint()">💡 Hint</button>
+            </div>
+            <div id="hint-text" class="hint-text"></div>
+            <div id="feedback"></div>
+        </div>
+    </div>
+
+    <!-- Celebration Effect -->
+    <div class="celebration" id="celebration"></div>
+
+    <script src="script1.js"></script>
+</body>
+</html>
