@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="Description" content="Gamified Environmental Education Platform for Schools and Colleges">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTech</title>
+    <link href="style2.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <nav id = "nav_bar">
+        <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+        <div class="nav_btn">Log in</div>
+        <div class="nav_btn">Sign up</div>
+        <input id="search_bar" type="text" placeholder="Search">
+        <input id="search_btn" type="submit" value="Search">
+    </nav>
+     <!-- Games Section -->
+        <section class="games-section">
+            <div class="section-header">
+                <h2 class="section-title">Higher School Standards</h2>
+            </div>
+            
+            <div class="games-grid" id="gamesGrid">
+
+
+                <div class="game-card">
+                    <a href="games/game1/game1.html" class="game-img" style="cursor:pointer;">🧩</a>
+                    <div class="game-content">
+                        <h3 class="game-title">Math Quest Adventure </h3>
+                        <p class="game-desc"> Solve mathematical challenges to unlock new levels! Each correct answer earns you points and unlocks the next adventure. Good luck, Math Explorer!</p>
+                        <div class="game-meta">
+                            <span>Strategy</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <a href="games/game2/game2.html" class="game-img" style="cursor:pointer;">🎮</a>
+                    <div class="game-content">
+                        <h3 class="game-title">Space Racer</h3>
+                        <p class="game-desc">Experience the thrill of high-speed space battles with stunning graphics and immersive gameplay.</p>
+                        <div class="game-meta">
+                            <span>Racing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <a href="games/game3/game3.html" class="game-img" style="cursor:pointer;">🚀</a>
+                    <div class="game-content">
+                        <h3 class="game-title">Space Shooter</h3>
+                        <p class="game-desc">Challenge your skills in intense space battles against waves of enemies.</p>
+                        <div class="game-meta">
+                            <span>Shooter</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                     <a href="games/game4/game4.html" class="game-img" style="cursor:pointer;">⁉️</a>
+                    <div class="game-content">
+                        <h3 class="game-title">Yes or No</h3>
+                        <p class="game-desc">A fun game to test your knowledge with simple yes or no questions.</p>
+                        <div class="game-meta">
+                            <span>GK</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <script src="script.js"></script>
+</body>
+</html>
