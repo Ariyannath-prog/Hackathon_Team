@@ -274,3 +274,7 @@ section{
             color: #888;
             font-size: 0.85rem;
         }
+        .link_style{
+            color: black;
+            text-decoration: none;
+        }
