@@ -139,7 +139,6 @@ nav{
     font-size: 5vmin;
     text-align: center;
     cursor: pointer; 
-    border-radius: 5px;
     margin-left: 5px;
     margin-right: 5vmin;
     user-select: none;
@@ -313,5 +312,12 @@ section{
         }
         .section-title{
             font-size: 4vmin;
+        }
+        .profile{
+            background-color: white;
+            width: 6vmin;
+            height: 6vmin;
+            border-radius: 50px;
+            cursor: pointer;
         }
         
