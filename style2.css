@@ -311,7 +311,12 @@ section{
             text-decoration: none;
         }
         .section-title{
+            font-size: 3vmin;
+            font-family: sans-serif;
+        }
+        .progress-text{
             font-size: 4vmin;
+            font-family: sans-serif;
         }
         .profile{
             background-color: white;
@@ -320,4 +325,5 @@ section{
             border-radius: 50px;
             cursor: pointer;
         }
+        
         
