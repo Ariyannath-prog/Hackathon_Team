@@ -242,8 +242,6 @@ strong {
 
 }
 
- 
-
 a {
 
  text-decoration: none;
@@ -441,15 +439,11 @@ input[type='checkbox'] {
  
 
 input[type='date'],
-
 input[type='time'],
-
 input[type='datetime-local'],
-
 input[type='month'] {
-
+ appearance: listbox;
  -webkit-appearance: listbox;
-
 }
 
  
@@ -510,6 +504,7 @@ progress {
 
  outline-offset: -2px;
 
+ appearance: none;
  -webkit-appearance: none;
 
 }
@@ -2698,7 +2693,7 @@ a.text-white:focus {
 
  
 
- @ page {
+ @page {
 
    size: a3;
 
@@ -3842,7 +3837,7 @@ textarea[resize='horizontal'] {
 
  
 
- @ keyframes show-navbar-dropdown {
+@keyframes show-navbar-dropdown {
 
    0% {
 
