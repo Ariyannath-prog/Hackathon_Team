@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up</title>
+    <title>Sign Up | Explore & Protect Our Planet</title>
     <link rel="stylesheet" href="sign_up.css">
 </head>
 <body>
-    <h1>Sign Up</h1>
-    <form id="signup-form">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Sign Up</button>
-    </form>
+    <div class="container">
+        <div class="left-panel">
+            <h2>WELCOME</h2>
+            <p>
+                Join the mission to explore, <br>
+                learn, and protect our planet
+            </p>
+            <div class="avatar-illustration"></div>
+        </div>
+        <div class="right-panel">
+            <div class="profile-icon">
+                <img src="profile-icon.png" alt="Profile Icon">
+            </div>
+            <form id="signupForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="email" id="email" placeholder="Email ID" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" class="primary-btn">Create account</button>
+                <button type="button" class="google-btn" onclick="googleSignUp()">Continue with Google</button>
+            </form>
+            <p class="login-link">
+                Already have an account? <a href="#">Log in</a>
+            </p>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
