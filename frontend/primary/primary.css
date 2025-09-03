@@ -149,3 +149,6 @@ a:hover {
 #second_sec{
     text-align: left;
 }
+.topic_link{
+    text-decoration: none;
+}
