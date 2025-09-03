@@ -1,0 +1,151 @@
+.progress-bar-container {
+	width: 100%;
+	margin: 32px auto 0 auto;
+	text-align: center;
+}
+
+.progress-label {
+	font-size: 1.1rem;
+	color: #008080;
+	margin-bottom: 8px;
+}
+
+.progress-bar-bg {
+	width: 80%;
+	height: 18px;
+	background: #eaf6f6;
+	border-radius: 9px;
+	margin: 0 auto;
+	box-shadow: 0 2px 8px rgba(0,128,128,0.08);
+	position: relative;
+	overflow: hidden;
+}
+
+.progress-bar-fill {
+	height: 100%;
+	width: 0%;
+	background: linear-gradient(90deg, #2dce89 0%, #5e72e4 100%);
+	border-radius: 9px;
+	transition: width 0.5s ease;
+}
+
+.progress-percentage {
+	margin-top: 8px;
+	font-size: 1rem;
+	color: #333;
+}
+body {
+	font-family: 'Segoe UI', Arial, sans-serif;
+	background: #eaf6f6;
+	margin: 0;
+	padding: 0;
+	color: #333;
+
+}
+
+header {
+	background: #a7e9af;
+	padding: 10px 0 16px 0;
+	text-align: center;
+	border-radius: 0 0 24px 24px;
+	box-shadow: 0 2px 8px rgba(0,128,128,0.08);
+}
+
+header h1 {
+	color: #008080;
+	font-size: 2.5rem;
+	margin-bottom: 8px;
+}
+
+header p {
+	font-size: 1.2rem;
+	color: #333;
+}
+
+main {
+	max-width: 1000px;
+	margin: 32px auto;
+	background: #fff;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0,128,128,0.08);
+	padding: 32px 24px;
+    text-align: center;
+}
+
+section {
+	margin-bottom: 32px;
+}
+
+section h2 {
+	color: #008080;
+	font-size: 1.5rem;
+	margin-bottom: 12px;
+}
+
+ul {
+	list-style: disc inside;
+	padding-left: 0;
+}
+
+li {
+	font-size: 1.1rem;
+	margin-bottom: 8px;
+	padding: 6px 0;
+	border-radius: 8px;
+	transition: background 0.2s;
+}
+
+li:hover {
+	background: #eaf6f6;
+}
+
+a {
+	color: #008080;
+	text-decoration: underline;
+	transition: color 0.2s;
+}
+
+a:hover {
+	color: #005f5f;
+}
+#containers{
+    display: flex;
+}
+.rows{
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 1vmin;
+    padding-bottom: 1vmin;
+}
+.content{
+	width: 10vmin;
+	height: 10vmin;
+	background-color: #5e72e4;
+	margin: 1vmin;
+	border-radius: 2vmin;
+	cursor: pointer;
+	color: wheat;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 7vmin;
+}
+.content:hover{
+	width: 10vmin;
+	height: 10vmin;
+	background-color: black;
+	margin: 1vmin;
+	border-radius: 2vmin;
+	cursor: pointer;
+	color: wheat;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 7vmin;
+    box-shadow: 0 4px 16px rgba(94, 114, 228, 0.15), 0 1.5px 4px rgba(0,0,0,0.08);
+    transition: 1s;
+}
+#second_sec{
+    text-align: left;
+}
