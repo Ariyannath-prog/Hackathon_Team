@@ -291,6 +291,7 @@ section{
         
         .section-title {
             margin: 0;
+            padding-top: 5px;
             color: #333;
             font-size: 1.5rem;
             text-align: center;
@@ -325,5 +326,3 @@ section{
             border-radius: 50px;
             cursor: pointer;
         }
-        
-        
