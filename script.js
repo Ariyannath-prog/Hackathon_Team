@@ -127,3 +127,56 @@
                 circle.style.filter = 'brightness(1)';
             });
         });
+
+let mode = document.querySelector("#theme-toggle");
+let current_mode = "light";
+
+mode.addEventListener("click", () => {
+    if(current_mode === "light"){
+    mode.innerText = "☀️";
+    current_mode = "Dark";
+    document.querySelector("body").style.backgroundColor = "#181a20";
+    document.querySelector("#nav_bar").style.backgroundColor = "#23272f";
+    mode.style.backgroundColor = "#23272f";
+    mode.style.color = "#eaf6f6";
+        document.querySelectorAll(".data").forEach(function(element){
+            element.style.backgroundColor = "#23272f";
+            element.style.boxShadow = "0 2px 8px rgba(0,0,0,0.18)";
+        });
+        document.querySelectorAll("h5").forEach(function(element){
+            element.style.backgroundColor = "#23272f";
+            element.style.color = "#eaf6f6";
+        });
+        document.querySelector(".slides").style.backgroundColor = "#23272f";
+        document.querySelector("#footer").style.backgroundColor = "#23272f";
+        document.querySelectorAll(".section-title").forEach(function(element){
+            element.style.color = "#eaf6f6";
+        });
+        document.querySelectorAll(".responsive-image").forEach(function(img){
+            img.style.boxShadow = "0 2px 8px rgba(0,0,0,0.18)";
+        });
+        document.querySelectorAll('.link_style').forEach(function(link){
+            link.style.color = 'white';
+        });
+       
+    }else{
+    mode.innerText = "🌙";
+    current_mode = "light";
+    document.querySelector("body").style.backgroundColor = "#c7f8f8";
+    document.querySelector("#nav_bar").style.backgroundColor = "#eaf6f6";
+    mode.style.backgroundColor = "#008080";
+    mode.style.color = "#fff";
+        document.querySelectorAll(".data").forEach(function(element){
+            element.style.backgroundColor = "#ffffffff"
+        })
+         document.querySelectorAll("h5").forEach(function(element){
+            element.style.backgroundColor = "#ffffffff";
+            element.style.color = "black";
+        })
+        document.querySelector(".slides").style.backgroundColor = "#ffffffff";
+        document.querySelector("#footer").style.backgroundColor = "#ffffffff";
+        document.querySelectorAll('.link_style').forEach(function(link){
+            link.style.color = 'black';
+        });
+    }
+})
