@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Auth System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">AuthApp</a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-profile" id="navProfile">
+                <img src="" alt="Profile" class="profile-img" id="profileImg">
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <img src="" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
+                    <div class="profile-info">
+                        <h1 id="profileName">Loading...</h1>
+                        <p id="profileEmail">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="profile-card">
+                        <h3>Account Information</h3>
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value" id="userName">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="userEmail">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member since:</span>
+                            <span class="info-value">Recently joined</span>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button class="btn-primary">Edit Profile</button>
+                        <button class="btn-secondary">Change Password</button>
+                        <button class="btn-danger" onclick="logout()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check authentication and load user data
+        async function loadProfile() {
+            try {
+                const response = await fetch('/user');
+                if (!response.ok) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                const data = await response.json();
+                const user = data.user;
+                
+                // Update profile information
+                document.getElementById('profileName').textContent = user.name || 'User';
+                document.getElementById('profileEmail').textContent = user.email || '';
+                document.getElementById('userName').textContent = user.name || 'User';
+                document.getElementById('userEmail').textContent = user.email || '';
+                
+                // Update profile images
+                const profileImg = document.getElementById('profileImg');
+                const profileAvatar = document.getElementById('profileAvatar');
+                
+                if (user.profile_picture) {
+                    profileImg.src = user.profile_picture;
+                    profileAvatar.src = user.profile_picture;
+                } else {
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=007bff&color=fff&size=200`;
+                    profileImg.src = defaultAvatar;
+                    profileAvatar.src = defaultAvatar;
+                }
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                window.location.href = '/';
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+
+        // Load profile when page loads
+        window.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>
