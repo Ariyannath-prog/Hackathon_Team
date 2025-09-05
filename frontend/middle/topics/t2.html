@@ -3,95 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topic 1</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Topic 2</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        #first_row {
+            display: flex;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #008080 0%, #2dce89 100%);
+            padding: 20px;
+            color: white;
+        }
+        
+        .yt_info_section {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+        }
+        
+        .first {
+            min-width: 400px;
+        }
+        
+        #ytplayer {
+            width: 100%;
+            height: 315px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .second {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #video-progress-chart {
+            text-align: center;
+        }
+        
+        #progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        #progress-label {
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-top: 15px;
+        }
+        
+        #second_row {
+            padding: 30px;
+        }
+        
+        .description section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .description h2 {
+            color: #008080;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .description ul, .description ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .description li {
+            margin-bottom: 8px;
+        }
+        
+        #next_btn {
+            background: #008080;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        #next_btn:hover {
+            background: #006666;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 768px) {
+            #first_row {
+                flex-direction: column;
+            }
+            
+            .first, .second {
+                min-width: 100%;
+            }
+            
+            #ytplayer {
+                height: 250px;
+            }
+        }
+        h1 {
+            text-align: center;
+            padding-top: 20px;
+            padding-bottom: 15px;
+            color: #006666;
+            background: linear-gradient(135deg, #008080 0%, #2dce89 100%);
+            color: white;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
     <main>
+        <h1>Our Changing Earth</h1>
         <div id="first_row">
             <div class="yt_info_section first">
                 <div id="ytplayer"></div>
             </div>
             <div class="yt_info_section second">
-                <div id="video-progress-chart" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div id="video-progress-chart">
                     <svg width="120" height="120">
                         <circle cx="60" cy="60" r="52" stroke="#eaf6f6" stroke-width="12" fill="none" />
                         <circle id="progress-ring" cx="60" cy="60" r="52" stroke="#2dce89" stroke-width="12" fill="none" stroke-dasharray="326.73" stroke-dashoffset="326.73" style="transition: stroke-dashoffset 0.5s;" />
                     </svg>
-                    <div id="progress-label" style="margin-top:12px;font-size:1.2rem;color:#008080;">0%</div>
+                    <div id="progress-label">0% Watched</div>
+                    <p style="margin-top: 15px; color: #eaf6f6;">Video progress will update as you watch</p>
                 </div>
             </div>
         </div>
         <div id="second_row">
             <div class="description">
                 <section>
-                <h2>Definition of Environment</h2>
-                <ul>
-                    <li>Everything that surrounds us is called Environment.</li>
-                    <li>It includes both natural things (mountains, rivers, plants, animals) and human-made things
-(buildings, roads, industries).</li>
-                </ul>
+                    <h2>Forces Acting on the Earth’s Surface</h2>
+                    <ul>
+                        <li>Endogenic forces → forces inside the Earth.</li>
+                        <li>Exogenic forces → forces on the Earth’s surface.</li>
+                    </ul>
                 </section>
 
                 <section>
-                <h2>Components of Environment</h2>
-                <ol>
-                    <li>Natural Environment → Land, water, air, plants, animals.</li>
-                    <li>Human-made Environment → Parks, buildings, roads, industries, monuments.</li>
-                    <li>Human Environment → People, families, communities, religion, education, politics.</li>
-                </ol>
+                    <h2>Earthquakes</h2>
+                    <ol>
+                        <li>Sudden shaking of the Earth’s surface.</li>
+                        <li>Focus = place inside Earth where earthquake starts.</li>
+                        <li>Epicentre = point on surface directly above focus.</li>
+                        <li>Measured by Richter scale.</li>
+                        <li>Cause: movement of tectonic plates.</li>
+                    </ol>
                 </section>
 
                 <section>
-                <h2>Domains of the Natural Environment</h2>
-                <ul>
-                    <li>Lithosphere → Land (rocks, soil, mountains, plains, valleys).</li>
-                    <li>Hydrosphere → Water (rivers, lakes, seas, oceans).</li>
-                    <li>Atmosphere → Air (gases, dust, water vapour).</li>
-                    <li>Biosphere → Living world (plants, animals, humans).</li>
-                </ul>
+                    <h2>Volcanoes</h2>
+                    <ul>
+                        <li>An opening in the Earth’s crust through which molten material (magma/lava), gases, and ash are ejected.</li>
+                        <li>Magma = molten rock inside Earth.</li>
+                        <li>Lava = magma that reaches Earth’s surface.</li>
+                    </ul>
                 </section>
 
                 <section>
-                <h2>Biotic and Abiotic Components</h2>
-                <ul>
-                    <li>Biotic = Living things (plants, animals, humans).</li>
-                    <li>Abiotic = Non-living things (land, water, air, sunlight).</li>
-                </ul>
+                    <h2>Major Agents of Erosion and Deposition</h2>
+                    <ul>
+                        <li>Rivers</li>
+                        <li>Glaciers</li>
+                        <li>Wind</li>
+                        <li>Sea waves</li>
+                    </ul>
                 </section>
 
                 <section>
-                <h2>Ecosystem</h2>
-                <ul>
-                    <li>An ecosystem is a system formed by the interaction of all living organisms with each other
-and with their physical surroundings.</li>
-                    <li>Examples: Pond ecosystem, forest ecosystem, desert ecosystem.</li>
-                </ul>
+                    <h2>Case Study – Bhuj Earthquake (2001)</h2>
+                    <ul>
+                        <li>Took place in Gujarat on 26 January 2001.</li>
+                        <li>Magnitude 7.7 on Richter scale.</li>
+                        <li>Thousands killed, villages destroyed, relief operations required.</li>
+                    </ul>
                 </section>
 
-                <section>
-                <h2>Human Environment</h2>
-                <ul>
-                    <li>Early humans lived in close harmony with nature.</li>
-                    <li>With time, humans modified the environment → invention of wheel, agriculture, industries,
-trade, transport, communication.</li>
-                    <li>Today, humans create cities, machines, and technology that change nature.</li>
-                </ul>
-                </section>
-
-                <section>
-                <h2>Key Examples & Facts</h2>
-                <ul>
-                    <li>Car fumes pollute air, factories pollute water and land.</li>
-                    <li>Humans must balance needs with conservation.</li>
-                    <li>World Environment Day is celebrated every year on 5th June.</li>
-                </ul>
-                </section>
                 <a href=""><button id="next_btn">Next -></button></a>
             </div>
         </div>
     </main>
-    <script src="script.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // YouTube API setup
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        
+        // Global variables
+        var player;
+        var progressInterval;
+        var progressCircle = document.getElementById('progress-ring');
+        var progressLabel = document.getElementById('progress-label');
+        var circumference = 2 * Math.PI * 52;
+        
+        // Set initial progress ring state
+        progressCircle.style.strokeDasharray = circumference;
+        progressCircle.style.strokeDashoffset = circumference;
+        
+        // Initialize YouTube player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytplayer', {
+                height: '100%',
+                width: '100%',
+                videoId: 'DjDfZuDDd40',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        // When player is ready
+        function onPlayerReady(event) {
+            console.log("YouTube player is ready");
+        }
+        
+        // Handle player state changes
+        function onPlayerStateChange(event) {
+            // Start updating progress when video plays
+            if (event.data == YT.PlayerState.PLAYING) {
+                progressInterval = setInterval(updateProgress, 1000);
+            } else {
+                clearInterval(progressInterval);
+            }
+        }
+        
+        // Update progress indicator
+        function updateProgress() {
+            if (player && player.getDuration) {
+                var duration = player.getDuration();
+                var currentTime = player.getCurrentTime();
+                var progress = (currentTime / duration) * 100;
+                
+                if (progress <= 100) {
+                    var offset = circumference - (progress / 100) * circumference;
+                    progressCircle.style.strokeDashoffset = offset;
+                    progressLabel.textContent = Math.round(progress) + '% Watched';
+                }
+            }
+        }
+    </script>
 </body>
 </html>
