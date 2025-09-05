@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="Description" content="Gamified Environmental Education Platform for Schools and Colleges">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auth System - Home</title>
-    <link rel="stylesheet" href="style.css">
-     <link href="style2.css" rel="stylesheet">
+    <title>EcoTech</title>
+    <link href="style2.css" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="frontend/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="frontend/favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="frontend/favicon_io/apple-touch-icon.png">
@@ -13,27 +13,19 @@
     <link rel="manifest" href="frontend/favicon_io/site.webmanifest">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="/">AuthApp</a>
-            </div>
-            <div class="nav-menu" id="navMenu">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-auth" id="navAuth">
-                <button class="btn-login" onclick="openLoginModal()">Login</button>
-                <button class="btn-signup" onclick="openSignupModal()">Sign Up</button>
-            </div>
-            <div class="nav-profile" id="navProfile" style="display: none;">
-                <img src="" alt="Profile" class="profile-img" id="profileImg" onclick="goToProfile()">
-                <button class="btn-logout" onclick="logout()">Logout</button>
-            </div>
+    <nav id = "nav_bar">
+        <div class="hamburger" onclick="toggleMenu()">
+            <img id = "logo" src="frontend/favicon_io/logo-removebg-preview.png" alt="logo">
         </div>
+        <div class="nav_btn"><a class="link_style" href="frontend/autho/login/index.html">Log in</a></div>
+        <div class="nav_btn"><a class="link_style" href="frontend/autho/sign_up/index.html">Sign up</a></div>
+        <input id="search_bar" type="text" placeholder="Search">
+        <input id="search_btn" type="submit" value="Search">
+        <a href="frontend/profile/profile.html">
+            <div class="profile"></div>
+        </a>
+        <button id="theme-toggle">🌙</button>
     </nav>
-
     <br>
     <div class="main">
         <div class="sub_main first">
@@ -152,67 +144,5 @@
 
 
     <script src="indexedit/script.js"></script>
-
-
-
-
-
-
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email:</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password:</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn-submit">Login</button>
-            </form>
-            <div class="divider">
-                <span>or</span>
-            </div>
-            <button class="btn-google" onclick="loginWithGoogle()">
-                Continue with Google
-            </button>
-        </div>
-    </div>
-
-    <!-- Signup Modal -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeSignupModal()">&times;</span>
-            <h2>Sign Up</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="signupName">Name:</label>
-                    <input type="text" id="signupName" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupEmail">Email:</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password:</label>
-                    <input type="password" id="signupPassword" required>
-                </div>
-                <button type="submit" class="btn-submit">Sign Up</button>
-            </form>
-            <div class="divider">
-                <span>or</span>
-            </div>
-            <button class="btn-google" onclick="loginWithGoogle()">
-                Sign up with Google
-            </button>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
