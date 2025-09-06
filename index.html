@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auth System - Home</title>
+    <title>EcoTech</title>
     <link rel="stylesheet" href="style.css">
      <link href="style2.css" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="frontend/favicon_io/favicon-32x32.png">
@@ -13,28 +13,22 @@
     <link rel="manifest" href="frontend/favicon_io/site.webmanifest">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="/">AuthApp</a>
-            </div>
-            <div class="nav-menu" id="navMenu">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-auth" id="navAuth">
-                <button class="btn-login" onclick="openLoginModal()">Login</button>
-                <button class="btn-signup" onclick="openSignupModal()">Sign Up</button>
-            </div>
-            <div class="nav-profile" id="navProfile" style="display: none;">
-                <img src="" alt="Profile" class="profile-img" id="profileImg" onclick="goToProfile()">
-                <button class="btn-logout" onclick="logout()">Logout</button>
-            </div>
+
+    <nav id = "nav_bar">
+        <div class="hamburger" onclick="toggleMenu()">
+            <img id="logo" src="frontend/favicon_io/android-chrome-512x512.png" alt="EcoTech Logo">
         </div>
+        <ul class="nav_links" id="navLinks">
+            <button class="btn-login" onclick="openLoginModal()">Login</button>
+                <button class="btn-signup" onclick="openSignupModal()">Sign Up</button>
+        </ul>
+        <div class="nav_btn">Home</div>
+        <div class="nav_btn">About</div>
+        <div class="nav_btn">contact</div>
+        <div id="theme-toggle">🌙</div>
     </nav>
 
-    <br>
+
     <div class="main">
         <div class="sub_main first">
             <div class="main-image-container">
@@ -91,8 +85,6 @@
                         <div class="progress-text">91%</div>
                     </div>
             </div>
-
-
             </div>
         </div>
     </div><br><br>
@@ -152,11 +144,6 @@
 
 
     <script src="indexedit/script.js"></script>
-
-
-
-
-
 
 
     <!-- Login Modal -->

@@ -137,7 +137,7 @@ mode.addEventListener("click", () => {
     current_mode = "Dark";
     document.querySelector("body").style.backgroundColor = "#181a20";
     document.querySelector("#nav_bar").style.backgroundColor = "#23272f";
-    mode.style.backgroundColor = "#23272f";
+    mode.style.backgroundColor = "#ffffffff";
     mode.style.color = "#eaf6f6";
         document.querySelectorAll(".data").forEach(function(element){
             element.style.backgroundColor = "#23272f";
@@ -158,6 +158,9 @@ mode.addEventListener("click", () => {
         document.querySelectorAll('.link_style').forEach(function(link){
             link.style.color = 'white';
         });
+        document.querySelectorAll(".nav_btn").forEach(function(element){
+            element.style.color = "white";
+        })
        
     }else{
     mode.innerText = "🌙";
@@ -178,5 +181,8 @@ mode.addEventListener("click", () => {
         document.querySelectorAll('.link_style').forEach(function(link){
             link.style.color = 'black';
         });
+        document.querySelectorAll(".nav_btn").forEach(function(element){
+            element.style.color = "black";
+        })
     }
 })
