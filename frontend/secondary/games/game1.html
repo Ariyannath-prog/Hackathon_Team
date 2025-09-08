@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Quiz Adventure - EcoTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #c7f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: transform 0.5s ease-in-out;
+            text-align: center;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+        }
+
+        .screen:not(.active) {
+            transform: translateX(100%);
+        }
+
+        .title {
+            color: #008080;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            background: #008080;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #006666;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .character {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: #008080;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #008080;
+            color: #008080;
+            padding: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            background: #008080;
+            color: white;
+        }
+
+        .option-btn.correct {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .score {
+            font-size: 1.4rem;
+            color: #008080;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            min-height: 1.5em;
+            color: #4a4a4a;
+        }
+
+        .timer {
+            font-size: 2rem;
+            color: #008080;
+            margin: 1rem 0;
+            font-weight: bold;
+            font-family: 'Digital', monospace;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 1rem;
+                min-height: 400px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="screen active" id="start-screen">
+            <div class="character">🌍</div>
+            <h1 class="title">Eco Quiz Adventure</h1>
+            <p class="subtitle">Test your knowledge about the environment and sustainability!</p>
+            <button class="btn" onclick="startGame()">Start Adventure</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="screen" id="game-screen">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="score" id="score">Score: 0</div>
+            <div class="timer" id="timer">20</div>
+            <h2 id="question" style="margin-bottom: 2rem; color: #333; font-size: 1.5rem;"></h2>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="screen" id="end-screen">
+            <div class="character">🏆</div>
+            <h1 class="title">Quiz Complete!</h1>
+            <div class="score" id="final-score"></div>
+            <p class="subtitle" id="completion-message"></p>
+            <button class="btn" onclick="restartGame()">Play Again</button>
+            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">Back to Games</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What should we do with empty water bottles?",
+                options: [
+                    "Throw them on the ground",
+                    "Put them in the recycling bin",
+                    "Burn them",
+                    "Hide them"
+                ],
+                correct: 1,
+                feedback: "Great job! Recycling helps keep our Earth clean and makes new things from old bottles! ♻️"
+            },
+            {
+                question: "Which of these helps plants grow?",
+                options: [
+                    "The Sun",
+                    "Television",
+                    "Candy",
+                    "Video games"
+                ],
+                correct: 0,
+                feedback: "Yes! Just like we need food, plants need sunlight to grow big and strong! 🌱"
+            },
+            {
+                question: "How can we save water at home?",
+                options: [
+                    "Leave the tap running",
+                    "Take very long showers",
+                    "Turn off the tap while brushing",
+                    "Play with water"
+                ],
+                correct: 2,
+                feedback: "Correct! Turning off the tap while brushing teeth saves lots of water! 💧"
+            },
+            {
+                question: "Which animal makes honey?",
+                options: [
+                    "Spider",
+                    "Bee",
+                    "Ant",
+                    "Butterfly"
+                ],
+                correct: 1,
+                feedback: "Yes! Bees are very important - they make honey and help flowers grow! 🐝"
+            },
+            {
+                question: "What can we do to help birds?",
+                options: [
+                    "Put out water and food",
+                    "Chase them",
+                    "Make loud noises",
+                    "Throw stones"
+                ],
+                correct: 0,
+                feedback: "That's right! Birds are our friends and need food and water just like we do! 🐦"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let isAnswered = false;
+        let timer = null;
+        const QUESTION_TIME = 20; // Time in seconds for each question
+
+        function startGame() {
+            currentQuestion = 0;
+            score = 0;
+            showScreen('game-screen');
+            displayQuestion();
+        }
+
+        function startTimer() {
+            let timeLeft = QUESTION_TIME;
+            const timerElement = document.getElementById('timer');
+            
+            // Clear any existing timer
+            if (timer) clearInterval(timer);
+            
+            timerElement.textContent = timeLeft;
+            timerElement.className = 'timer';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                // Warning colors
+                if (timeLeft <= 5) {
+                    timerElement.className = 'timer danger';
+                } else if (timeLeft <= 10) {
+                    timerElement.className = 'timer warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function timeUp() {
+            if (!isAnswered) {
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = "Time's up! Let's try the next question! 🕒";
+                feedback.style.color = '#ff9800';
+                
+                setTimeout(() => {
+                    currentQuestion++;
+                    displayQuestion();
+                }, 1500);
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame();
+                return;
+            }
+
+            // Start the timer for new question
+            startTimer();
+            isAnswered = false;
+
+            const question = questions[currentQuestion];
+            document.getElementById('question').textContent = `Question ${currentQuestion + 1}: ${question.question}`;
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('progress').style.width = 
+                `${(currentQuestion / questions.length) * 100}%`;
+            
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('feedback').textContent = '';
+            isAnswered = false;
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            // Stop the timer when answer is selected
+            clearInterval(timer);
+
+            const question = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+
+            buttons[question.correct].classList.add('correct');
+            
+            if (selectedIndex === question.correct) {
+                score += 20;
+                feedback.textContent = "Correct! " + question.feedback;
+                feedback.style.color = '#4CAF50';
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                feedback.textContent = "Incorrect. " + question.feedback;
+                feedback.style.color = '#f44336';
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                displayQuestion();
+            }, 2000);
+        }
+
+        function endGame() {
+            showScreen('end-screen');
+            document.getElementById('final-score').textContent = `Final Score: ${score}`;
+            
+            let message;
+            if (score === 100) {
+                message = "Perfect! You're an environmental expert! 🌟";
+            } else if (score >= 80) {
+                message = "Great job! You know your environmental facts! 🌱";
+            } else if (score >= 60) {
+                message = "Good effort! Keep learning about our environment! 🌿";
+            } else {
+                message = "Keep trying! Every attempt helps you learn more! 🌍";
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            showScreen('game-screen');
+            displayQuestion();
+        }
+    </script>
+</body>
+</html>

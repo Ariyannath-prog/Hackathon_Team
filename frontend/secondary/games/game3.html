@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco City Builder - EcoTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #c7f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: transform 0.5s ease-in-out;
+            background: white;
+            gap: 1.5rem;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+        }
+
+        .screen:not(.active) {
+            transform: translateX(100%);
+        }
+
+        .title {
+            color: #008080;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f0f9f9;
+            border-radius: 10px;
+        }
+
+        .score, .timer, .eco-points {
+            font-size: 1.2rem;
+            color: #008080;
+            font-weight: bold;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: #f44336;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+            background: #e6f7f7;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            background: #fff;
+            border: 2px solid #008080;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .grid-cell:hover {
+            background: #f0f9f9;
+            transform: scale(1.05);
+        }
+
+        .building-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f0f9f9;
+            border-radius: 10px;
+        }
+
+        .building-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .building-option:hover {
+            background: #e6f7f7;
+            transform: scale(1.1);
+        }
+
+        .building-icon {
+            font-size: 2rem;
+        }
+
+        .building-name {
+            font-size: 0.8rem;
+            color: #008080;
+            text-align: center;
+        }
+
+        .eco-info {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 128, 128, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .help-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #008080;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1);
+        }
+
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .help-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .help-content h2 {
+            color: #008080;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .help-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-content li {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+        }
+
+        .close-help {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .btn {
+            background: #008080;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #006666;
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .game-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .building-options {
+                gap: 0.5rem;
+            }
+
+            .building-icon {
+                font-size: 1.5rem;
+            }
+
+            .building-name {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="screen active" id="start-screen">
+            <div style="text-align: center;">
+                <h1 class="title">Eco City Builder</h1>
+                <p style="color: #666; font-size: 1.1rem; line-height: 1.6;">
+                    Build your own eco-friendly city! 🌱<br>
+                    Place green buildings and save energy!
+                </p>
+            </div>
+            <div style="font-size: 5rem; margin: 1rem 0; animation: float 2s infinite ease-in-out;">🏗️</div>
+            <div style="text-align: center; margin: 1rem 0; color: #008080;">
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Play:</p>
+                <ul style="list-style: none; line-height: 1.6;">
+                    <li>🎯 Select eco-friendly buildings</li>
+                    <li>🌟 Place them on the grid</li>
+                    <li>⏰ Build your city in 2 minutes</li>
+                    <li>🎮 Earn eco points for each building!</li>
+                </ul>
+            </div>
+            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 1rem 3rem;">
+                Start Building! 🚀
+            </button>
+        </div>
+
+        <style>
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+        </style>
+
+        <!-- Game Screen -->
+        <div class="screen" id="game-screen">
+            <button class="help-button" onclick="showHelp()">❔</button>
+            <div class="game-stats">
+                <div class="eco-points">Eco Points: 0</div>
+                <div class="timer">120</div>
+            </div>
+
+            <div class="building-options" id="building-options">
+                <!-- Building options will be added here by JavaScript -->
+            </div>
+
+            <!-- Help Overlay -->
+            <div class="help-overlay" id="helpOverlay">
+                <div class="help-content">
+                    <button class="close-help" onclick="hideHelp()">×</button>
+                    <h2>How to Play</h2>
+                    <ul>
+                        <li>🎯 Select a building from the options above</li>
+                        <li>🌟 Click any empty square to place your building</li>
+                        <li>💎 Each building gives different eco points:</li>
+                        <li>⏰ Complete your city within 1 minutes!</li>
+                        <li>🎮 Try to get 100+ points for the best score!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="game-grid" id="game-grid">
+                <!-- Grid cells will be added here by JavaScript -->
+            </div>
+
+            <div class="eco-info" id="eco-info"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="screen" id="end-screen">
+            <h1 class="title">City Complete!</h1>
+            <div style="font-size: 4rem; margin: 1rem;">🌆</div>
+            <div class="eco-points" style="font-size: 2rem; margin: 1rem;">Eco Points: 0</div>
+            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
+            <button class="btn" onclick="startGame()">Build Again</button>
+            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
+                Back to Games
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const buildings = [
+            { icon: "🌳", name: "Tree", points: 5, info: "Trees clean our air and give us shade!" },
+            { icon: "☀️", name: "Solar Panel", points: 10, info: "Solar panels make clean energy from the sun!" },
+            { icon: "🏡", name: "Eco Home", points: 15, info: "These homes use less energy to stay cool!" },
+            { icon: "🚲", name: "Bike Path", points: 8, info: "Riding bikes helps keep our air clean!" },
+            { icon: "🌺", name: "Garden", points: 7, info: "Gardens help save water and feed people!" },
+            { icon: "♻️", name: "Recycling Center", points: 12, info: "Recycling helps make new things from old ones!" }
+        ];
+
+        let ecoPoints = 0;
+        let timer = null;
+        let gameTime = 60; // 2 minutes
+        let selectedBuilding = null;
+
+        function startGame() {
+            ecoPoints = 0;
+            updateEcoPoints();
+            showScreen('game-screen');
+            createGrid();
+            createBuildingOptions();
+            startTimer();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function createGrid() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+            
+            for(let i = 0; i < 20; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.onclick = () => placeBuilding(cell);
+                grid.appendChild(cell);
+            }
+        }
+
+        function createBuildingOptions() {
+            const container = document.getElementById('building-options');
+            container.innerHTML = '';
+            
+            buildings.forEach(building => {
+                const option = document.createElement('div');
+                option.className = 'building-option';
+                option.innerHTML = `
+                    <div class="building-icon">${building.icon}</div>
+                    <div class="building-name">${building.name}</div>
+                `;
+                option.onclick = () => selectBuilding(building);
+                container.appendChild(option);
+            });
+        }
+
+        function selectBuilding(building) {
+            selectedBuilding = building;
+            document.querySelectorAll('.building-option').forEach(option => {
+                option.style.background = option.querySelector('.building-name').textContent === building.name 
+                    ? '#e6f7f7' 
+                    : '';
+            });
+            showEcoInfo(building.info);
+        }
+
+        function placeBuilding(cell) {
+            if (!selectedBuilding || cell.textContent) return;
+            
+            cell.textContent = selectedBuilding.icon;
+            ecoPoints += selectedBuilding.points;
+            updateEcoPoints();
+            
+            // Add placement animation
+            cell.style.transform = 'scale(1.2)';
+            setTimeout(() => cell.style.transform = '', 200);
+            
+            // Show success message
+            showEcoInfo(`Great choice! +${selectedBuilding.points} eco points! 🌟`);
+        }
+
+        function showEcoInfo(message) {
+            const info = document.getElementById('eco-info');
+            info.textContent = message;
+            info.style.opacity = '1';
+            
+            setTimeout(() => {
+                info.style.opacity = '0';
+            }, 2000);
+        }
+
+        function updateEcoPoints() {
+            document.querySelectorAll('.eco-points').forEach(el => {
+                el.textContent = `Eco Points: ${ecoPoints}`;
+            });
+        }
+
+        function startTimer() {
+            let timeLeft = gameTime;
+            const timerElement = document.querySelector('.timer');
+            
+            if (timer) clearInterval(timer);
+            
+            timerElement.textContent = timeLeft;
+            timerElement.className = 'timer';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 30) {
+                    timerElement.className = 'timer danger';
+                } else if (timeLeft <= 60) {
+                    timerElement.className = 'timer warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function showHelp() {
+            document.getElementById('helpOverlay').style.display = 'flex';
+        }
+
+        function hideHelp() {
+            document.getElementById('helpOverlay').style.display = 'none';
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            
+            let message;
+            if (ecoPoints >= 100) {
+                message = "Amazing! Your city is super eco-friendly! 🌟";
+            } else if (ecoPoints >= 70) {
+                message = "Great job! Your city is helping the Earth! 🌍";
+            } else if (ecoPoints >= 40) {
+                message = "Good start! Keep making your city greener! 🌱";
+            } else {
+                message = "Try adding more eco-friendly buildings next time! 💪";
+            }
+            
+            document.getElementById('end-message').textContent = message;
+            showScreen('end-screen');
+        }
+    </script>
+</body>
+</html>

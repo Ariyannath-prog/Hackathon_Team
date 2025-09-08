@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Rescue - EcoTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #c7f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: clamp(10px, 2vw, 20px);
+            padding: clamp(0.5rem, 2vw, 1.5rem);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: min(95vw, 1200px);
+            min-height: min(90vh, 900px);
+            height: calc(100vh - clamp(50px, 10vh, 100px));
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: min(80vh, 600px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(1rem, 3vw, 2rem);
+            transition: transform 0.5s ease-in-out;
+            background: white;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+        }
+
+        .screen:not(.active) {
+            transform: translateX(100%);
+        }
+
+        .title {
+            color: #008080;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: clamp(0.5rem, 2vw, 1.5rem);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: clamp(0.5rem, 2vw, 1rem);
+            padding: clamp(0.3rem, 1.5vw, 0.8rem);
+            background: #f0f9f9;
+            border-radius: clamp(5px, 1.5vw, 10px);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .score, .timer, .animals-rescued {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #008080;
+            font-weight: bold;
+            flex: 1;
+            text-align: center;
+            min-width: max-content;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: #f44336;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        .game-content {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            padding: 1rem;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+            gap: clamp(0.5rem, 2vw, 1.5rem);
+            flex: 1;
+            min-height: min(80vh, 800px);
+            height: calc(100vh - clamp(150px, 20vh, 200px));
+            perspective: 1000px;
+            padding: clamp(0.5rem, 2vw, 1.5rem);
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: auto;
+        }
+
+        .field-journal {
+            width: clamp(200px, 30vw, 300px);
+            background: #f0f9f9;
+            border-radius: clamp(10px, 2vw, 15px);
+            padding: clamp(0.5rem, 1.5vw, 1.5rem);
+            overflow-y: auto;
+            max-height: min(80vh, 500px);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .field-journal h3 {
+            color: #008080;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #008080;
+        }
+
+        .animal-entry {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateX(20px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animal-entry .animal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .animal-entry .animal-emoji {
+            font-size: 2rem;
+        }
+
+        .animal-entry .animal-name {
+            color: #008080;
+            font-weight: bold;
+        }
+
+        .animal-entry .animal-fact {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .animal-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            cursor: pointer;
+            height: clamp(80px, 15vw, 150px);
+            max-width: clamp(80px, 15vw, 150px);
+            margin: 0 auto;
+            transition: transform 0.2s ease;
+        }
+
+        .animal-card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .animal-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background: #008080;
+            color: white;
+        }
+
+        .card-back {
+            background: white;
+            border: 2px solid #008080;
+            transform: rotateY(180deg);
+        }
+
+        .help-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #008080;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1);
+        }
+
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .help-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .help-content h2 {
+            color: #008080;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .help-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-content li {
+            margin: 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .close-help {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .animal-info {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f0f9f9;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .animal-info h3 {
+            color: #008080;
+            margin-bottom: 0.5rem;
+        }
+
+        .animal-info p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background: #008080;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #006666;
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 1200px) {
+            .game-content {
+                gap: clamp(0.5rem, 2vw, 1rem);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .game-content {
+                flex-direction: column;
+            }
+
+            .field-journal {
+                width: 100%;
+                height: clamp(150px, 30vh, 250px);
+                order: 2;
+                position: relative;
+            }
+
+            .game-area {
+                order: 1;
+                min-height: clamp(300px, 50vh, 600px);
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 0.5rem;
+            }
+
+            .game-content {
+                padding: 0.5rem;
+            }
+
+            .game-stats {
+                font-size: 0.9rem;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .field-journal {
+                height: clamp(120px, 25vh, 180px);
+                padding: 0.8rem;
+            }
+        }
+
+        /* Landscape mode optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .game-content {
+                flex-direction: row;
+            }
+
+            .field-journal {
+                width: clamp(200px, 25vw, 250px);
+                height: clamp(300px, 80vh, 400px);
+                order: 0;
+            }
+
+            .game-area {
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 100px), 1fr));
+                min-height: clamp(250px, 70vh, 400px);
+            }
+
+            .animal-card {
+                height: clamp(60px, 12vw, 100px);
+                max-width: clamp(60px, 12vw, 100px);
+            }
+
+            .title {
+                font-size: clamp(1.2rem, 3vw, 2rem);
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="screen active" id="start-screen">
+            <div style="text-align: center;">
+                <h1 class="title">Wildlife Rescue</h1>
+                <p style="color: #666; font-size: 1.1rem; line-height: 1.6;">
+                    Help save endangered animals! 🦁<br>
+                    Match the animals and learn about them!
+                </p>
+            </div>
+            <div style="font-size: 5rem; margin: 1rem 0; animation: float 2s infinite ease-in-out;">🐘</div>
+            <div style="text-align: center; margin: 1rem 0; color: #008080;">
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Play:</p>
+                <ul style="list-style: none; line-height: 1.6;">
+                    <li>🎯 Click cards to flip them</li>
+                    <li>🌟 Match pairs of animals</li>
+                    <li>📚 Learn about each animal</li>
+                    <li>⏰ Complete the game in 2 minutes!</li>
+                </ul>
+            </div>
+            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 1rem 3rem;">
+                Start Rescue! 🚀
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="screen" id="game-screen">
+            <button class="help-button" onclick="showHelp()">❔</button>
+            <div class="game-stats">
+                <div class="animals-rescued">Animals Rescued: 0</div>
+                <div class="timer">120</div>
+            </div>
+
+            <div class="animal-info" id="animalInfo">
+                <h3></h3>
+                <p></p>
+            </div>
+
+            <div class="game-area" id="gameArea">
+                <!-- Cards will be added here by JavaScript -->
+            </div>
+
+            <!-- Help Overlay -->
+            <div class="help-overlay" id="helpOverlay">
+                <div class="help-content">
+                    <button class="close-help" onclick="hideHelp()">×</button>
+                    <h2>How to Play</h2>
+                    <ul>
+                        <li>🎯 Click on any card to flip it</li>
+                        <li>🔍 Find matching pairs of animals</li>
+                        <li>📚 Learn about each animal you rescue</li>
+                        <li>⭐ Each match gives you points</li>
+                        <li>⏰ Complete all matches within 2 minutes</li>
+                        <li>🎮 The more animals you rescue, the higher your score!</li>
+                        <li>💡 Remember the locations to make matches faster</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="screen" id="end-screen">
+            <h1 class="title">Mission Complete!</h1>
+            <div style="font-size: 4rem; margin: 1rem;">🦁</div>
+            <div class="animals-rescued" style="font-size: 2rem; margin: 1rem;"></div>
+            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
+            <button class="btn" onclick="startGame()">Play Again</button>
+            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
+                Back to Games
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const animals = [
+            { emoji: "🐘", name: "Elephant", info: "Elephants are the largest land animals. They're very smart and live in family groups!" },
+            { emoji: "🐼", name: "Panda", info: "Giant pandas love eating bamboo. They're endangered but we're helping protect them!" },
+            { emoji: "🐯", name: "Tiger", info: "Tigers are the biggest wild cats. They have beautiful stripes that help them hide!" },
+            { emoji: "🦒", name: "Giraffe", info: "Giraffes are the tallest animals in the world. They use their long necks to eat leaves!" },
+            { emoji: "🦍", name: "Gorilla", info: "Gorillas are gentle giants. They're very strong and live in families like we do!" },
+            { emoji: "🐋", name: "Whale", info: "Blue whales are the biggest animals ever! They sing songs to talk to each other!" }
+        ];
+
+        let animalsRescued = 0;
+        let timer = null;
+        let gameTime = 120;
+        let flippedCards = [];
+        let canFlip = true;
+
+        function startGame() {
+            animalsRescued = 0;
+            updateScore();
+            createCards();
+            showScreen('game-screen');
+            startTimer();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function createCards() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            
+            // Create pairs of animals
+            const gamePairs = [...animals, ...animals];
+            // Shuffle the array
+            for (let i = gamePairs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gamePairs[i], gamePairs[j]] = [gamePairs[j], gamePairs[i]];
+            }
+            
+            gamePairs.forEach((animal, index) => {
+                const card = document.createElement('div');
+                card.className = 'animal-card';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">❓</div>
+                        <div class="card-back">${animal.emoji}</div>
+                    </div>
+                `;
+                card.dataset.animal = animal.name;
+                card.onclick = () => flipCard(card, animal);
+                gameArea.appendChild(card);
+            });
+        }
+
+        function flipCard(card, animal) {
+            if (!canFlip || card.classList.contains('flipped')) return;
+            
+            card.classList.add('flipped');
+            flippedCards.push({card, animal});
+            
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = flippedCards;
+            const match = first.animal.name === second.animal.name;
+            
+            setTimeout(() => {
+                if (match) {
+                    animalsRescued++;
+                    updateScore();
+                    showAnimalInfo(first.animal);
+                    
+                    if (animalsRescued === animals.length) {
+                        endGame(true);
+                    }
+                } else {
+                    first.card.classList.remove('flipped');
+                    second.card.classList.remove('flipped');
+                }
+                
+                flippedCards = [];
+                canFlip = true;
+            }, 1000);
+        }
+
+        function showAnimalInfo(animal) {
+            const info = document.getElementById('animalInfo');
+            info.style.display = 'block';
+            info.querySelector('h3').textContent = animal.name;
+            info.querySelector('p').textContent = animal.info;
+            
+            setTimeout(() => {
+                info.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateScore() {
+            document.querySelectorAll('.animals-rescued').forEach(el => {
+                el.textContent = `Animals Rescued: ${animalsRescued}`;
+            });
+        }
+
+        function startTimer() {
+            let timeLeft = gameTime;
+            const timerElement = document.querySelector('.timer');
+            
+            if (timer) clearInterval(timer);
+            
+            timerElement.textContent = timeLeft;
+            timerElement.className = 'timer';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 30) {
+                    timerElement.className = 'timer danger';
+                } else if (timeLeft <= 60) {
+                    timerElement.className = 'timer warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function showHelp() {
+            document.getElementById('helpOverlay').style.display = 'flex';
+        }
+
+        function hideHelp() {
+            document.getElementById('helpOverlay').style.display = 'none';
+        }
+
+        function endGame(completed) {
+            clearInterval(timer);
+            
+            let message;
+            if (completed) {
+                message = "Amazing! You've rescued all the animals! 🌟";
+            } else if (animalsRescued >= 4) {
+                message = "Great job! You've helped many animals! 🦁";
+            } else if (animalsRescued >= 2) {
+                message = "Good start! Keep helping our animal friends! 🐘";
+            } else {
+                message = "Try again! Every rescue attempt helps! 💪";
+            }
+            
+            document.getElementById('end-message').textContent = message;
+            showScreen('end-screen');
+        }
+    </script>
+</body>
+</html>

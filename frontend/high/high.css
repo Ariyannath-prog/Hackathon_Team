@@ -152,3 +152,27 @@ a:hover {
 .topic_link{
     text-decoration: none;
 }
+#game_section {
+  text-align: center;
+  margin: 40px auto;
+  font-family: "Poppins", sans-serif;
+}
+
+#game_link {
+  display: inline-block;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #09f59f, #04ff00);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 114, 255, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+#game_link:hover {
+  background: linear-gradient(135deg, #04ff00, #09f59f);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 114, 255, 0.4);
+}

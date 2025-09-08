@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle Sort Challenge - EcoTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #c7f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            transition: transform 0.5s ease-in-out;
+            background: white;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+        }
+
+        .screen:not(.active) {
+            transform: translateX(100%);
+        }
+
+        .title {
+            color: #008080;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .score-timer {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f0f9f9;
+            border-radius: 10px;
+        }
+
+        .score, .timer {
+            font-size: 1.5rem;
+            color: #008080;
+            font-weight: bold;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: #f44336;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            height: 100%;
+        }
+
+        .items-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            min-height: 100px;
+            padding: 1rem;
+            background: #f0f9f9;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .waste-item {
+            width: 60px;
+            height: 60px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.2s;
+            position: relative;
+            font-size: 2.5rem;
+        }
+
+        .waste-item:hover {
+            transform: scale(1.1);
+        }
+
+        .bins-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            gap: 1rem;
+            margin-top: auto;
+        }
+
+        .bin {
+            width: 100px;
+            height: 120px;
+            border: 3px solid #008080;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.5rem;
+            background: #fff;
+            position: relative;
+        }
+
+        .bin-label {
+            font-size: 0.9rem;
+            text-align: center;
+            color: #008080;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .bin-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 128, 128, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .btn {
+            background: #008080;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #006666;
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .bins-container {
+                flex-wrap: wrap;
+            }
+
+            .bin {
+                width: 80px;
+                height: 100px;
+            }
+
+            .waste-item {
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+            }
+        }
+        #start-screen{
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="screen active" id="start-screen">
+            <h1 class="title">Recycle Sort Challenge</h1>
+            <div style="text-align: center; margin: 1rem 0; color: #666; max-width: 600px;">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                    Join the eco-friendly mission and become a recycling champion! 🌍♻️
+                </p>
+                <div style="background: #f0f9f9; padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
+                    <h2 style="color: #008080; margin-bottom: 1rem; font-size: 1.2rem;">How to Play:</h2>
+                    <ul style="list-style: none; line-height: 1.6; text-align: left;">
+                        <li>🔄 Drag waste items to their matching recycling bins</li>
+                        <li>✨ Score points for correct sorting (10 points each)</li>
+                        <li>⏰ Race against time - you have 60 seconds!</li>
+                        <li>🎯 Sort into these categories:</li>
+                    </ul>
+                   
+                </div>
+                
+            </div>
+            <button class="btn" onclick="startGame()" style="margin-top: 1rem;">Start Game</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="screen" id="game-screen">
+            <div class="score-timer">
+                <div class="score">Score: 0</div>
+                <div class="timer">60</div>
+            </div>
+            <div class="game-area">
+                <div class="items-container" id="items-container">
+                    <!-- Items will be added here by JavaScript -->
+                </div>
+                <div class="bins-container">
+                    <div class="bin" data-type="paper">
+                        <div class="bin-icon">📄</div>
+                        <div class="bin-label">Paper</div>
+                    </div>
+                    <div class="bin" data-type="plastic">
+                        <div class="bin-icon">🥤</div>
+                        <div class="bin-label">Plastic</div>
+                    </div>
+                    <div class="bin" data-type="organic">
+                        <div class="bin-icon">🍎</div>
+                        <div class="bin-label">Food Waste</div>
+                    </div>
+                </div>
+            </div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="screen" id="end-screen">
+            <h1 class="title">Game Over!</h1>
+            <div style="font-size: 4rem; margin: 1rem;">🏆</div>
+            <div class="score" style="font-size: 2rem; margin: 1rem;">Final Score: 0</div>
+            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
+            <button class="btn" onclick="startGame()">Play Again</button>
+            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
+                Back to Games
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const wasteItems = [
+            { emoji: "📰", type: "paper", name: "Newspaper" },
+            { emoji: "📦", type: "paper", name: "Cardboard Box" },
+            { emoji: "📄", type: "paper", name: "Paper" },
+            { emoji: "🥤", type: "plastic", name: "Plastic Cup" },
+            { emoji: "🍾", type: "plastic", name: "Plastic Bottle" },
+            { emoji: "💧", type: "plastic", name: "Water Bottle" },
+            { emoji: "🍎", type: "organic", name: "Apple Core" },
+            { emoji: "🍌", type: "organic", name: "Banana Peel" },
+            { emoji: "🥕", type: "organic", name: "Carrot Tops" }
+        ];
+
+        let score = 0;
+        let timer = null;
+        let gameTime = 60; // 60 seconds game time
+        let currentItems = [];
+        let draggingElement = null;
+
+        function startGame() {
+            score = 0;
+            updateScore();
+            showScreen('game-screen');
+            createItems();
+            startTimer();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function createItems() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            currentItems = [];
+
+            // Randomly select items
+            for(let i = 0; i < 6; i++) {
+                const item = wasteItems[Math.floor(Math.random() * wasteItems.length)];
+                currentItems.push(item);
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'waste-item';
+                itemElement.innerHTML = item.emoji;
+                itemElement.draggable = true;
+                itemElement.dataset.type = item.type;
+                
+                // Touch events
+                itemElement.addEventListener('touchstart', dragStart);
+                itemElement.addEventListener('touchmove', drag);
+                itemElement.addEventListener('touchend', dragEnd);
+                
+                // Mouse events
+                itemElement.addEventListener('mousedown', dragStart);
+                itemElement.addEventListener('mousemove', drag);
+                itemElement.addEventListener('mouseup', dragEnd);
+                
+                container.appendChild(itemElement);
+            }
+        }
+
+        function startTimer() {
+            let timeLeft = gameTime;
+            const timerElement = document.querySelector('.timer');
+            
+            if (timer) clearInterval(timer);
+            
+            timerElement.textContent = timeLeft;
+            timerElement.className = 'timer';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 10) {
+                    timerElement.className = 'timer danger';
+                } else if (timeLeft <= 20) {
+                    timerElement.className = 'timer warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function dragStart(e) {
+            if (e.type === 'mousedown') {
+                draggingElement = e.target;
+                const rect = draggingElement.getBoundingClientRect();
+                draggingElement.style.position = 'fixed';
+                draggingElement.style.zIndex = 1000;
+                
+                function mouseMoveHandler(e) {
+                    drag(e);
+                }
+                
+                function mouseUpHandler(e) {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                    dragEnd(e);
+                }
+                
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            } else if (e.type === 'touchstart') {
+                draggingElement = e.target;
+                const touch = e.touches[0];
+                const rect = draggingElement.getBoundingClientRect();
+                draggingElement.style.position = 'fixed';
+                draggingElement.style.zIndex = 1000;
+            }
+        }
+
+        function drag(e) {
+            if (!draggingElement) return;
+            
+            e.preventDefault();
+            
+            const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+            
+            draggingElement.style.left = clientX - draggingElement.offsetWidth / 2 + 'px';
+            draggingElement.style.top = clientY - draggingElement.offsetHeight / 2 + 'px';
+        }
+
+        function dragEnd(e) {
+            if (!draggingElement) return;
+            
+            const bins = document.querySelectorAll('.bin');
+            const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+            const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+            
+            let foundBin = false;
+            bins.forEach(bin => {
+                const rect = bin.getBoundingClientRect();
+                if (clientX >= rect.left && clientX <= rect.right &&
+                    clientY >= rect.top && clientY <= rect.bottom) {
+                    checkAnswer(draggingElement, bin);
+                    foundBin = true;
+                }
+            });
+            
+            if (!foundBin) {
+                draggingElement.style.position = '';
+                draggingElement.style.zIndex = '';
+                draggingElement.style.left = '';
+                draggingElement.style.top = '';
+            }
+            
+            draggingElement = null;
+        }
+
+        function checkAnswer(item, bin) {
+            const isCorrect = item.dataset.type === bin.dataset.type;
+            showFeedback(isCorrect);
+            
+            if (isCorrect) {
+                score += 10;
+                updateScore();
+                item.remove();
+                
+                // Check if all items are sorted
+                if (document.querySelectorAll('.waste-item').length === 0) {
+                    createItems();
+                }
+            } else {
+                item.style.position = '';
+                item.style.zIndex = '';
+                item.style.left = '';
+                item.style.top = '';
+            }
+        }
+
+        function showFeedback(isCorrect) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = isCorrect ? '✨ Great job! ✨' : '❌ Try again! ❌';
+            feedback.style.opacity = '1';
+            
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+            }, 1000);
+        }
+
+        function updateScore() {
+            document.querySelector('.score').textContent = `Score: ${score}`;
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            document.getElementById('end-screen').querySelector('.score').textContent = `Final Score: ${score}`;
+            
+            let message;
+            if (score >= 100) {
+                message = "Amazing! You're a recycling champion! 🌟";
+            } else if (score >= 70) {
+                message = "Great job! You're helping save the Earth! 🌍";
+            } else if (score >= 40) {
+                message = "Good effort! Keep practicing! 🌱";
+            } else {
+                message = "Keep trying! You'll be a recycling expert soon! 💪";
+            }
+            
+            document.getElementById('end-message').textContent = message;
+            showScreen('end-screen');
+        }
+
+        // Prevent default drag behavior
+        document.addEventListener('dragstart', e => e.preventDefault());
+    </script>
+</body>
+</html>
