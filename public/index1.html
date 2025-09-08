@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auth System - Home</title>
+    <title>EcoTech</title>
     <link rel="stylesheet" href="style.css">
-     <link href="style2.css" rel="stylesheet">
+    <link href="style2.css" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="frontend/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="frontend/favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="frontend/favicon_io/apple-touch-icon.png">
-   
     <link rel="manifest" href="frontend/favicon_io/site.webmanifest">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
@@ -18,21 +19,111 @@
             <div class="nav-logo">
                 <a href="/">AuthApp</a>
             </div>
+            
+            <!-- Hamburger menu for mobile -->
+            <div class="hamburger" id="hamburger">
+                <span class="material-icons">menu</span>
+            </div>
+            
+            <!-- Navigation menu -->
             <div class="nav-menu" id="navMenu">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
+                <a href="#" class="nav-link">
+                    <span class="material-icons">home</span>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="material-icons">info</span>
+                    <span>About</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="material-icons">contact_support</span>
+                    <span>Contact</span>
+                </a>
             </div>
+            
+            <!-- Authentication buttons (shown when user is not logged in) -->
             <div class="nav-auth" id="navAuth">
-                <button class="btn-login" onclick="openLoginModal()">Login</button>
-                <button class="btn-signup" onclick="openSignupModal()">Sign Up</button>
+                <button class="btn-login" onclick="openLoginModal()">
+                    <span class="material-icons">login</span>
+                    <span>Login</span>
+                </button>
+                <button class="btn-signup" onclick="openSignupModal()">
+                    <span class="material-icons">person_add</span>
+                    <span>Sign Up</span>
+                </button>
             </div>
+            
+            <!-- Profile section (shown when user is logged in) -->
             <div class="nav-profile" id="navProfile" style="display: none;">
-                <img src="" alt="Profile" class="profile-img" id="profileImg" onclick="goToProfile()">
-                <button class="btn-logout" onclick="logout()">Logout</button>
+                <div class="profile-dropdown">
+                    <div class="profile-img-container" onclick="toggleProfileDropdown()">
+                        <img src="frontend/default-avatar.png" alt="Profile" class="profile-img" id="profileImg">
+                    </div>
+                    <div class="dropdown-content" id="profileDropdown">
+                        <a href="#" onclick="goToProfile()">
+                            <span class="material-icons">person</span>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" onclick="logout()">
+                            <span class="material-icons">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- The rest of your HTML content remains the same -->
+    <!-- ... -->
+    
+    <!-- Updated Login Modal with Reset Password option -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+            <div class="form-footer">
+                <a href="#" onclick="openResetPasswordModal()">Forgot Password?</a>
+            </div>
+            <div class="divider">
+                <span>or</span>
+            </div>
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="frontend/google-icon.png" alt="Google Logo" class="google-icon">
+                Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeResetPasswordModal()">&times;</span>
+            <h2>Reset Password</h2>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label for="resetEmail">Email:</label>
+                    <input type="email" id="resetEmail" required>
+                </div>
+                <button type="submit" class="btn-submit">Send Reset Link</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal remains the same -->
+    <!-- ... -->
+
 
     <br>
     <div class="main">
@@ -151,10 +242,6 @@
 
 
 
-    <script src="indexedit/script.js"></script>
-
-
-
 
 
 
@@ -212,7 +299,9 @@
             </button>
         </div>
     </div>
-
+    <script type="module" src="../firebase-config.js"></script>
     <script src="script.js"></script>
+    <script src="script2.js"></script>
+    <script src="script1.js"></script>
 </body>
 </html>

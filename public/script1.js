@@ -1,3 +1,16 @@
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('serviceWorker.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
+}
+
 // Global variables
 let currentUser = null;
 
@@ -37,7 +50,7 @@ function updateNavBar(isAuthenticated) {
             profileImg.src = currentUser.profile_picture;
         } else {
             // Generate default avatar using user's name
-            const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'User')}&background=007bff&color=fff&size=80`;
+            const defaultAvatar = https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'User')}&background=007bff&color=fff&size=80;
             profileImg.src = defaultAvatar;
         }
     } else {
@@ -189,7 +202,7 @@ function showNotification(message, type = 'info') {
     
     // Create notification element
     const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
+    notification.className = notification notification-${type};
     notification.textContent = message;
     
     // Add styles

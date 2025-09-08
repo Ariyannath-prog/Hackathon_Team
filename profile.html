@@ -3,116 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Auth System</title>
+    <title>User Profile - AuthApp</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 80px auto 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #008080;
+        }
+        
+        .profile-info h1 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .profile-info p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .detail-card h3 {
+            margin-top: 0;
+            color: #008080;
+            display: flex;
+            align-items: center;
+        }
+        
+        .detail-card h3 .material-icons {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .detail-item {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .detail-item span:first-child {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Same navbar as index.html -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
                 <a href="/">AuthApp</a>
             </div>
-            <div class="nav-menu" id="navMenu">
-                <a href="/" class="nav-link">Home</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
+            
+            <div class="hamburger" id="hamburger">
+                <span class="material-icons">menu</span>
             </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">
+                    <span class="material-icons">home</span>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="material-icons">info</span>
+                    <span>About</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="material-icons">contact_support</span>
+                    <span>Contact</span>
+                </a>
+            </div>
+            
+            <div class="nav-auth" id="navAuth" style="display: none;">
+                <button class="btn-login" onclick="openLoginModal()">
+                    <span class="material-icons">login</span>
+                    <span>Login</span>
+                </button>
+                <button class="btn-signup" onclick="openSignupModal()">
+                    <span class="material-icons">person_add</span>
+                    <span>Sign Up</span>
+                </button>
+            </div>
+            
             <div class="nav-profile" id="navProfile">
-                <img src="" alt="Profile" class="profile-img" id="profileImg">
-                <button class="btn-logout" onclick="logout()">Logout</button>
+                <div class="profile-dropdown">
+                    <div class="profile-img-container" onclick="toggleProfileDropdown()">
+                        <img src="frontend/default-avatar.png" alt="Profile" class="profile-img" id="profileImg">
+                    </div>
+                    <div class="dropdown-content" id="profileDropdown">
+                        <a href="#" onclick="goToProfile()">
+                            <span class="material-icons">person</span>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" onclick="logout()">
+                            <span class="material-icons">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="main-content">
-        <div class="container">
-            <div class="profile-container">
-                <div class="profile-header">
-                    <img src="" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
-                    <div class="profile-info">
-                        <h1 id="profileName">Loading...</h1>
-                        <p id="profileEmail">Loading...</p>
-                    </div>
-                </div>
-                
-                <div class="profile-details">
-                    <div class="profile-card">
-                        <h3>Account Information</h3>
-                        <div class="info-row">
-                            <span class="info-label">Name:</span>
-                            <span class="info-value" id="userName">Loading...</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Email:</span>
-                            <span class="info-value" id="userEmail">Loading...</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Member since:</span>
-                            <span class="info-value">Recently joined</span>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button class="btn-primary">Edit Profile</button>
-                        <button class="btn-secondary">Change Password</button>
-                        <button class="btn-danger" onclick="logout()">Sign Out</button>
-                    </div>
-                </div>
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="frontend/default-avatar.png" alt="Profile" class="profile-avatar" id="profileAvatar">
+            <div class="profile-info">
+                <h1 id="profileName">User Name</h1>
+                <p id="profileEmail">user@example.com</p>
             </div>
         </div>
-    </main>
+        
+        <div class="profile-details">
+            <div class="detail-card">
+                <h3><span class="material-icons">person</span> Personal Information</h3>
+                <div class="detail-item">
+                    <span>Full Name:</span>
+                    <span id="profileFullName">John Doe</span>
+                </div>
+                <div class="detail-item">
+                    <span>Email:</span>
+                    <span id="profileDetailEmail">john.doe@example.com</span>
+                </div>
+                <div class="detail-item">
+                    <span>Member Since:</span>
+                    <span id="memberSince">January 2023</span>
+                </div>
+            </div>
+            
+            <div class="detail-card">
+                <h3><span class="material-icons">security</span> Account Security</h3>
+                <div class="detail-item">
+                    <span>Email Verified:</span>
+                    <span id="emailVerified">Yes</span>
+                </div>
+                <div class="detail-item">
+                    <span>Last Login:</span>
+                    <span id="lastLogin">Today, 14:30</span>
+                </div>
+                <button class="btn-change-password" onclick="openResetPasswordModal()">
+                    Change Password
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <script type="module" src="firebase-config.js"></script>
+    <script src="auth.js"></script>
     <script>
-        // Check authentication and load user data
-        async function loadProfile() {
-            try {
-                const response = await fetch('/user');
-                if (!response.ok) {
-                    window.location.href = '/';
-                    return;
+        // Load user data on profile page
+        import { auth, onAuthStateChanged } from './firebase-config.js';
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('profileName').textContent = user.displayName || 'User';
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('profileDetailEmail').textContent = user.email;
+                
+                if (user.photoURL) {
+                    document.getElementById('profileAvatar').src = user.photoURL;
                 }
                 
-                const data = await response.json();
-                const user = data.user;
+                document.getElementById('emailVerified').textContent = user.emailVerified ? 'Yes' : 'No';
                 
-                // Update profile information
-                document.getElementById('profileName').textContent = user.name || 'User';
-                document.getElementById('profileEmail').textContent = user.email || '';
-                document.getElementById('userName').textContent = user.name || 'User';
-                document.getElementById('userEmail').textContent = user.email || '';
-                
-                // Update profile images
-                const profileImg = document.getElementById('profileImg');
-                const profileAvatar = document.getElementById('profileAvatar');
-                
-                if (user.profile_picture) {
-                    profileImg.src = user.profile_picture;
-                    profileAvatar.src = user.profile_picture;
-                } else {
-                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=007bff&color=fff&size=200`;
-                    profileImg.src = defaultAvatar;
-                    profileAvatar.src = defaultAvatar;
+                // Format creation date
+                if (user.metadata.creationTime) {
+                    const date = new Date(user.metadata.creationTime);
+                    document.getElementById('memberSince').textContent = date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long' 
+                    });
                 }
                 
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                window.location.href = '/';
+                // Format last sign-in time
+                if (user.metadata.lastSignInTime) {
+                    const date = new Date(user.metadata.lastSignInTime);
+                    document.getElementById('lastLogin').textContent = date.toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        year: 'numeric', 
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = 'index.html';
             }
-        }
-
-        async function logout() {
-            try {
-                const response = await fetch('/logout', { method: 'POST' });
-                if (response.ok) {
-                    window.location.href = '/';
-                }
-            } catch (error) {
-                console.error('Error logging out:', error);
-            }
-        }
-
-        // Load profile when page loads
-        window.addEventListener('DOMContentLoaded', loadProfile);
+        });
     </script>
 </body>
 </html>

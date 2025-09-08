@@ -64,38 +64,9 @@
 .dropdown:hover .dropdown-content {
     display: block;
 }
-#nav_bar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-#nav_bar #logo {
-    height: 9vmin;
-    width: auto;
-    margin-right: 24px;
-    margin-left: 0;
-    display: block;
-}
-#nav_bar .nav-logo {
-    height: 6vmin;
-    width: auto;
-    margin-right: 20px;
-}
 body{
     margin: 0;
     background-color: #c7f8f8;
-}
-#nav_bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #eaf6f6;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,128,128,0.08);
-    display: flex;
-    align-items: center;
 }
 .main{
     width: 100%;
@@ -164,40 +135,6 @@ body{
     cursor: pointer;
     margin: 3px;
     position: relative;
-}
-nav{
-    height: 10vmin;
-    background-color: #88f6fc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-}
-.nav_btn{
-    font-family: sans-serif;
-    width: 12vmin;
-    text-align: left;
-    font-size: 3vmin;
-    margin-left: 10px;
-}
-#search_bar{
-    width: 30vmin;
-    border: none;
-    height: 6vmin;
-    border-radius: 6px;
-    padding-left: 5px;
-    font-size: 3vmin;
-    margin-right: 10px;
-}
-#search_btn{
-    border: none;
-    height: 6vmin;
-    border-radius: 5px;
-    margin-right: 10px;
-    width: 12vmin;
-    font-size: 3vmin;
-    cursor: pointer;
-    background-color: white;
 }
 .hamburger{
     width: 5vmin;
@@ -392,3 +329,44 @@ section{
             border-radius: 50px;
             cursor: pointer;
         }
+
+
+
+
+
+
+
+  
+.btn-login, .btn-signup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-login {
+    background: transparent;
+    color: #008080;
+    border: 1px solid #008080;
+}
+
+.btn-login:hover {
+    background: #008080;
+    color: white;
+}
+
+.btn-signup {
+    background: #008080;
+    color: white;
+}
+
+.btn-signup:hover {
+    background: #005f5f;
+}
+
+
