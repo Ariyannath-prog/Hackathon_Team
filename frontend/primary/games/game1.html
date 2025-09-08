@@ -13,39 +13,43 @@
         }
 
         body {
-            background-color: #c7f8f8;
+            background: linear-gradient(135deg, #c7f8f8 0%, #a8e6cf 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
         .game-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 800px;
-            min-height: 500px;
+            max-width: 900px;
+            min-height: 80vh;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .screen {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            transition: transform 0.5s ease-in-out;
+            padding: 1.5rem;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
+            overflow-y: auto;
         }
 
         .screen.active {
@@ -58,155 +62,346 @@
 
         .title {
             color: #008080;
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: 1rem;
             text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            line-height: 1.5;
+            max-width: 500px;
         }
 
         .btn {
-            background: #008080;
+            background: linear-gradient(135deg, #008080 0%, #006666 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
+            padding: clamp(0.8rem, 3vw, 1rem) clamp(1.5rem, 4vw, 2rem);
             border-radius: 25px;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
+            transition: all 0.3s ease;
             margin: 0.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 128, 128, 0.3);
+            min-width: 120px;
         }
 
         .btn:hover {
-            background: #006666;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #006666 0%, #004d4d 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 128, 128, 0.4);
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .character {
-            font-size: 4rem;
-            margin-bottom: 2rem;
-            animation: bounce 1s infinite alternate;
+            font-size: clamp(3rem, 8vw, 4rem);
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite alternate ease-in-out;
         }
 
         @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-15px) scale(1.05); }
         }
 
         .progress-bar {
             width: 100%;
-            height: 10px;
-            background: #eee;
-            border-radius: 5px;
+            height: 12px;
+            background: rgba(238, 238, 238, 0.8);
+            border-radius: 6px;
             margin: 1rem 0;
             overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .progress {
             height: 100%;
-            background: #008080;
+            background: linear-gradient(90deg, #008080 0%, #20b2aa 100%);
             width: 0%;
             transition: width 0.3s ease;
+            border-radius: 6px;
         }
 
         .options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
+            max-width: 600px;
         }
 
         .option-btn {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             border: 2px solid #008080;
             color: #008080;
-            padding: 1rem;
+            padding: clamp(0.8rem, 3vw, 1rem);
             border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
         }
 
         .option-btn:hover {
             background: #008080;
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 128, 128, 0.3);
         }
 
         .option-btn.correct {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             border-color: #4CAF50;
             color: white;
+            transform: scale(1.02);
         }
 
         .option-btn.wrong {
-            background: #f44336;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
             border-color: #f44336;
             color: white;
+            transform: scale(0.98);
         }
 
         .score {
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
             color: #008080;
             margin: 1rem 0;
             font-weight: bold;
+            background: rgba(0, 128, 128, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .feedback {
             margin-top: 1rem;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3vw, 1.2rem);
             min-height: 1.5em;
             color: #4a4a4a;
+            font-weight: 500;
+            max-width: 500px;
+            line-height: 1.4;
         }
 
         .timer {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
             color: #008080;
             margin: 1rem 0;
             font-weight: bold;
-            font-family: 'Digital', monospace;
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 128, 128, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            min-width: 80px;
+            backdrop-filter: blur(5px);
         }
 
         .timer.warning {
             color: #ff9800;
+            background: rgba(255, 152, 0, 0.1);
             animation: pulse 1s infinite;
         }
 
         .timer.danger {
             color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
+        #question {
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+            line-height: 1.4;
+            font-weight: 600;
+            max-width: 600px;
+        }
+
+        /* Mobile-specific styles */
         @media (max-width: 768px) {
-            .game-container {
-                padding: 1rem;
-                min-height: 400px;
+            body {
+                padding: 5px;
             }
 
-            .title {
-                font-size: 2rem;
+            .game-container {
+                padding: 1rem;
+                min-height: 85vh;
+                border-radius: 15px;
+                margin: 5px 0;
+            }
+
+            .screen {
+                padding: 1rem;
             }
 
             .options {
                 grid-template-columns: 1fr;
+                gap: 0.8rem;
+                margin-top: 1rem;
+                min-width: 250px;
+            }
+
+            .option-btn {
+                padding: 1rem;
+                font-size: 1rem;
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
             }
 
             .btn {
-                padding: 0.8rem 1.5rem;
-                font-size: 1rem;
+                width: 100%;
+                max-width: 280px;
+                padding: 1rem 1.5rem;
+                margin: 0.3rem 0;
+            }
+
+            .character {
+                margin-bottom: 1rem;
+            }
+
+            .title {
+                margin-bottom: 0.8rem;
+            }
+
+            .subtitle {
+                margin-bottom: 1rem;
+                padding: 0 0.5rem;
+            }
+
+            .timer {
+                font-size: 1.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .score {
+                font-size: 1.3rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .feedback {
+                margin-top: 0.8rem;
+                padding: 0 0.5rem;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 0.8rem;
+                min-height: 90vh;
+                border-radius: 10px;
+            }
+
+            .screen {
+                padding: 0.8rem;
+            }
+
+            .options {
+                min-width: 200px;
+            }
+
+            .option-btn {
+                padding: 0.9rem;
+                font-size: 0.95rem;
+                min-height: 45px;
+            }
+
+            .progress-bar {
+                height: 10px;
+                margin: 0.8rem 0;
+            }
+        }
+
+        /* Large desktop screens */
+        @media (min-width: 1200px) {
+            .game-container {
+                max-width: 1000px;
+                padding: 2.5rem;
+            }
+
+            .options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+                max-width: 700px;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .game-container {
+                min-height: 95vh;
+                padding: 0.8rem;
+            }
+
+            .screen {
+                padding: 0.5rem;
+            }
+
+            .character {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .title {
+                margin-bottom: 0.5rem;
+            }
+
+            .subtitle {
+                margin-bottom: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+                margin-top: 0.8rem;
+            }
+
+            .option-btn {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Touch-friendly hover states */
+        @media (hover: none) {
+            .btn:hover {
+                transform: none;
+                background: linear-gradient(135deg, #008080 0%, #006666 100%);
+            }
+
+            .option-btn:hover {
+                transform: none;
+                background: rgba(255, 255, 255, 0.9);
+                color: #008080;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .game-container {
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             }
         }
     </style>
@@ -228,7 +423,7 @@
             </div>
             <div class="score" id="score">Score: 0</div>
             <div class="timer" id="timer">20</div>
-            <h2 id="question" style="margin-bottom: 2rem; color: #333; font-size: 1.5rem;"></h2>
+            <h2 id="question"></h2>
             <div class="options" id="options"></div>
             <div class="feedback" id="feedback"></div>
         </div>
@@ -240,7 +435,7 @@
             <div class="score" id="final-score"></div>
             <p class="subtitle" id="completion-message"></p>
             <button class="btn" onclick="restartGame()">Play Again</button>
-            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">Back to Games</button>
+            <button class="btn" onclick="window.location.href='index.html'" style="background: linear-gradient(135deg, #666 0%, #555 100%);">Back to Games</button>
         </div>
     </div>
 
@@ -448,6 +643,25 @@
             showScreen('game-screen');
             displayQuestion();
         }
+
+        // Prevent zoom on double tap for iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Add viewport height fix for mobile browsers
+        function setViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        window.addEventListener('resize', setViewportHeight);
+        setViewportHeight();
     </script>
 </body>
 </html>

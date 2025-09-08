@@ -3,490 +3,562 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eco City Builder - EcoTech</title>
+    <title>Carbon Footprint Challenge - Environmental Quiz</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #c7f8f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 1rem;
-        }
-
-        .game-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            min-height: 600px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding: 10px;
         }
 
-        .screen {
+        .floating-clouds {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            min-height: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            transition: transform 0.5s ease-in-out;
-            background: white;
-            gap: 1.5rem;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .screen.active {
-            transform: translateX(0);
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            opacity: 0.8;
         }
 
-        .screen:not(.active) {
-            transform: translateX(100%);
+        .cloud1 {
+            width: clamp(80px, 15vw, 100px);
+            height: clamp(30px, 6vw, 40px);
+            top: 20%;
+            animation: float 20s infinite;
         }
 
-        .title {
-            color: #008080;
-            font-size: 2rem;
-            margin-bottom: 1rem;
+        .cloud2 {
+            width: clamp(60px, 12vw, 80px);
+            height: clamp(25px, 5vw, 35px);
+            top: 60%;
+            animation: float 25s infinite;
+        }
+
+        .cloud3 {
+            width: clamp(90px, 18vw, 120px);
+            height: clamp(35px, 7vw, 45px);
+            top: 40%;
+            animation: float 30s infinite;
+        }
+
+        @keyframes float {
+            0% { left: -20%; }
+            100% { left: 120%; }
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: clamp(20px, 5vw, 40px);
+            max-width: 800px;
+            width: 95%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
             text-align: center;
+            color: #2c3e50;
+            margin-bottom: clamp(20px, 4vw, 30px);
+            font-size: clamp(1.8em, 6vw, 2.5em);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .game-stats {
+        .stats-bar {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: #f0f9f9;
-            border-radius: 10px;
-        }
-
-        .score, .timer, .eco-points {
-            font-size: 1.2rem;
-            color: #008080;
-            font-weight: bold;
-        }
-
-        .timer.warning {
-            color: #ff9800;
-            animation: pulse 1s infinite;
-        }
-
-        .timer.danger {
-            color: #f44336;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-            margin: 1rem 0;
-            background: #e6f7f7;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-
-        .grid-cell {
-            aspect-ratio: 1;
-            background: #fff;
-            border: 2px solid #008080;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .grid-cell:hover {
-            background: #f0f9f9;
-            transform: scale(1.05);
-        }
-
-        .building-options {
-            display: flex;
-            gap: 1rem;
+            margin-bottom: clamp(20px, 4vw, 30px);
             flex-wrap: wrap;
-            justify-content: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f0f9f9;
-            border-radius: 10px;
+            gap: 10px;
         }
 
-        .building-option {
+        .stat-item {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            padding: clamp(8px, 2vw, 12px) clamp(15px, 3vw, 20px);
+            border-radius: 50px;
+            font-weight: bold;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .building-option:hover {
-            background: #e6f7f7;
-            transform: scale(1.1);
-        }
-
-        .building-icon {
-            font-size: 2rem;
-        }
-
-        .building-name {
-            font-size: 0.8rem;
-            color: #008080;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: clamp(0.9em, 3vw, 1em);
+            flex: 1;
             text-align: center;
-        }
-
-        .eco-info {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 128, 128, 0.9);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .help-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #008080;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-
-        .help-button:hover {
-            transform: scale(1.1);
-        }
-
-        .help-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .help-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .help-content h2 {
-            color: #008080;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .help-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .help-content li {
-            margin: 1rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #333;
-        }
-
-        .close-help {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .btn {
-            background: #008080;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-            margin: 0.5rem;
-        }
-
-        .btn:hover {
-            background: #006666;
-            transform: translateY(-2px);
+            min-width: 120px;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
-        @media (max-width: 600px) {
-            .game-grid {
-                grid-template-columns: repeat(4, 1fr);
+        .stat-icon {
+            font-size: clamp(1.1em, 3vw, 1.3em);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: clamp(20px, 4vw, 30px);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 2px 10px rgba(0, 184, 148, 0.5);
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            padding: clamp(15px, 4vw, 30px);
+            border-radius: 15px;
+            margin-bottom: clamp(15px, 3vw, 25px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: clamp(1.1em, 4vw, 1.3em);
+            color: #2c3e50;
+            margin-bottom: clamp(15px, 3vw, 25px);
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: clamp(10px, 2vw, 15px);
+        }
+
+        .option {
+            background: white;
+            padding: clamp(12px, 3vw, 18px) clamp(15px, 4vw, 25px);
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .option:hover, .option:active {
+            transform: translateX(10px);
+            border-color: #00b894;
+            box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border-color: #00b894;
+            transform: scale(1.02);
+        }
+
+        .option.correct {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border-color: #00b894;
+            animation: correctPulse 0.6s;
+        }
+
+        .option.incorrect {
+            background: linear-gradient(135deg, #d63031, #ff6b6b);
+            color: white;
+            border-color: #d63031;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback {
+            margin-top: clamp(10px, 2vw, 20px);
+            padding: clamp(10px, 2vw, 15px);
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.5s;
+            font-size: clamp(0.9em, 3vw, 1em);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .next-btn {
+            display: none;
+            margin: clamp(15px, 3vw, 20px) auto;
+            padding: clamp(10px, 2vw, 15px) clamp(25px, 5vw, 40px);
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .next-btn:hover, .next-btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 184, 148, 0.4);
+        }
+
+        .game-over {
+            display: none;
+            text-align: center;
+            animation: slideUp 0.6s;
+        }
+
+        .trophy {
+            font-size: clamp(3em, 10vw, 5em);
+            margin-bottom: clamp(15px, 3vw, 20px);
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .final-stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: clamp(15px, 4vw, 30px);
+            border-radius: 20px;
+            margin: clamp(15px, 3vw, 20px) 0;
+        }
+
+        .final-stats h2 {
+            font-size: clamp(1.5em, 5vw, 2em);
+            margin-bottom: clamp(15px, 3vw, 20px);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: clamp(10px, 2vw, 15px) 0;
+            font-size: clamp(0.9em, 3vw, 1.2em);
+        }
+
+        .restart-btn {
+            padding: clamp(10px, 2vw, 15px) clamp(25px, 5vw, 40px);
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .restart-btn:hover, .restart-btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 184, 148, 0.4);
+        }
+
+        .eco-tip {
+            background: #e8f5e9;
+            padding: clamp(10px, 2vw, 15px);
+            border-radius: 10px;
+            margin-top: clamp(10px, 2vw, 15px);
+            border-left: 5px solid #4caf50;
+            font-style: italic;
+            color: #2e7d32;
+            font-size: clamp(0.9em, 3vw, 1em);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                width: 100%;
+                padding: 15px;
             }
 
-            .building-options {
-                gap: 0.5rem;
+            .stats-bar {
+                flex-direction: column;
+                align-items: center;
             }
 
-            .building-icon {
-                font-size: 1.5rem;
+            .stat-item {
+                width: 100%;
+                max-width: 300px;
             }
 
-            .building-name {
-                font-size: 0.7rem;
+            .option {
+                padding: 12px 15px;
+            }
+
+            .next-btn, .restart-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .question {
+                font-size: 1em;
+            }
+
+            .option {
+                font-size: 0.9em;
+                padding: 10px 12px;
+            }
+
+            .feedback {
+                font-size: 0.9em;
+            }
+
+            .final-stats h2 {
+                font-size: 1.5em;
+            }
+
+            .trophy {
+                font-size: 3em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Start Screen -->
-        <div class="screen active" id="start-screen">
-            <div style="text-align: center;">
-                <h1 class="title">Eco City Builder</h1>
-                <p style="color: #666; font-size: 1.1rem; line-height: 1.6;">
-                    Build your own eco-friendly city! 🌱<br>
-                    Place green buildings and save energy!
-                </p>
+    <div class="floating-clouds">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+    </div>
+
+    <div class="quiz-container">
+        <h1>🌍 Carbon Footprint Challenge 🌱</h1>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-icon">📊</span>
+                <span>Score: <span id="score">0</span></span>
             </div>
-            <div style="font-size: 5rem; margin: 1rem 0; animation: float 2s infinite ease-in-out;">🏗️</div>
-            <div style="text-align: center; margin: 1rem 0; color: #008080;">
-                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Play:</p>
-                <ul style="list-style: none; line-height: 1.6;">
-                    <li>🎯 Select eco-friendly buildings</li>
-                    <li>🌟 Place them on the grid</li>
-                    <li>⏰ Build your city in 2 minutes</li>
-                    <li>🎮 Earn eco points for each building!</li>
-                </ul>
+            <div class="stat-item">
+                <span class="stat-icon">⏱️</span>
+                <span>Time: <span id="timer">90</span>s</span>
             </div>
-            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 1rem 3rem;">
-                Start Building! 🚀
-            </button>
+            <div class="stat-item">
+                <span class="stat-icon">❓</span>
+                <span>Question: <span id="question-number">1</span>/10</span>
+            </div>
         </div>
 
-        <style>
-            @keyframes float {
-                0% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
-                100% { transform: translateY(0px); }
-            }
-        </style>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 10%"></div>
+        </div>
 
-        <!-- Game Screen -->
-        <div class="screen" id="game-screen">
-            <button class="help-button" onclick="showHelp()">❔</button>
-            <div class="game-stats">
-                <div class="eco-points">Eco Points: 0</div>
-                <div class="timer">120</div>
+        <div id="quiz-content">
+            <div class="question-container">
+                <div class="question" id="question"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
             </div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+        </div>
 
-            <div class="building-options" id="building-options">
-                <!-- Building options will be added here by JavaScript -->
-            </div>
-
-            <!-- Help Overlay -->
-            <div class="help-overlay" id="helpOverlay">
-                <div class="help-content">
-                    <button class="close-help" onclick="hideHelp()">×</button>
-                    <h2>How to Play</h2>
-                    <ul>
-                        <li>🎯 Select a building from the options above</li>
-                        <li>🌟 Click any empty square to place your building</li>
-                        <li>💎 Each building gives different eco points:</li>
-                        <li>⏰ Complete your city within 1 minutes!</li>
-                        <li>🎮 Try to get 100+ points for the best score!</li>
-                    </ul>
+        <div class="game-over" id="game-over">
+            <div class="trophy">🏆</div>
+            <div class="final-stats">
+                <h2>Mission Complete!</h2>
+                <div class="stat-row">
+                    <span>Final Score:</span>
+                    <span id="final-score">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Correct Answers:</span>
+                    <span id="correct-answers">0</span>/10
+                </div>
+                <div class="stat-row">
+                    <span>Time Taken:</span>
+                    <span id="time-taken">0</span> seconds
+                </div>
+                <div class="stat-row">
+                    <span>Grade:</span>
+                    <span id="grade">A+</span>
                 </div>
             </div>
-
-            <div class="game-grid" id="game-grid">
-                <!-- Grid cells will be added here by JavaScript -->
-            </div>
-
-            <div class="eco-info" id="eco-info"></div>
-        </div>
-
-        <!-- End Screen -->
-        <div class="screen" id="end-screen">
-            <h1 class="title">City Complete!</h1>
-            <div style="font-size: 4rem; margin: 1rem;">🌆</div>
-            <div class="eco-points" style="font-size: 2rem; margin: 1rem;">Eco Points: 0</div>
-            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
-            <button class="btn" onclick="startGame()">Build Again</button>
-            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
-                Back to Games
-            </button>
+            <div class="eco-tip" id="eco-tip"></div>
+            <button class="restart-btn" onclick="restartGame()">Play Again 🔄</button>
         </div>
     </div>
 
     <script>
-        const buildings = [
-            { icon: "🌳", name: "Tree", points: 5, info: "Trees clean our air and give us shade!" },
-            { icon: "☀️", name: "Solar Panel", points: 10, info: "Solar panels make clean energy from the sun!" },
-            { icon: "🏡", name: "Eco Home", points: 15, info: "These homes use less energy to stay cool!" },
-            { icon: "🚲", name: "Bike Path", points: 8, info: "Riding bikes helps keep our air clean!" },
-            { icon: "🌺", name: "Garden", points: 7, info: "Gardens help save water and feed people!" },
-            { icon: "♻️", name: "Recycling Center", points: 12, info: "Recycling helps make new things from old ones!" }
+        const quizQuestions = [
+            {
+                question: "🚗 Which transportation method has the lowest carbon footprint for short trips?",
+                options: ["Driving alone in a car", "Taking the bus", "Walking or cycling", "Flying"],
+                correct: 2,
+                explanation: "Walking and cycling produce zero direct emissions and are the most eco-friendly options for short distances!",
+                tip: "Try biking or walking for trips under 2 miles. You'll reduce emissions and improve your health!"
+            },
+            {
+                question: "💡 Which type of light bulb is most energy-efficient?",
+                options: ["Incandescent bulbs", "Halogen bulbs", "CFL (Compact Fluorescent)", "LED bulbs"],
+                correct: 3,
+                explanation: "LED bulbs use up to 80% less energy than traditional incandescent bulbs and last much longer!",
+                tip: "Replace all your bulbs with LEDs - they pay for themselves through energy savings!"
+            },
+            {
+                question: "🍽️ Which diet choice has the smallest carbon footprint?",
+                options: ["Eating more red meat", "Plant-based meals", "Processed foods", "Imported exotic fruits"],
+                correct: 1,
+                explanation: "Plant-based foods generally require less water, land, and energy to produce than animal products!",
+                tip: "Try 'Meatless Monday' or add one plant-based meal per day to reduce your impact!"
+            },
+            {
+                question: "🏠 What's the most effective way to reduce home energy consumption?",
+                options: ["Leaving devices on standby", "Proper insulation", "Using more appliances", "Opening windows in winter"],
+                correct: 1,
+                explanation: "Good insulation can reduce heating and cooling costs by up to 40%!",
+                tip: "Check for air leaks around windows and doors. Weather stripping is an easy DIY fix!"
+            },
+            {
+                question: "♻️ Which material takes the longest to decompose in landfills?",
+                options: ["Paper", "Glass bottles", "Banana peels", "Aluminum cans"],
+                correct: 1,
+                explanation: "Glass can take over 1 million years to decompose, but it's 100% recyclable indefinitely!",
+                tip: "Always recycle glass containers - they can be recycled endlessly without quality loss!"
+            },
+            {
+                question: "🌊 How much water does it take to produce one cotton t-shirt?",
+                options: ["50 liters", "200 liters", "700 liters", "2,700 liters"],
+                correct: 3,
+                explanation: "It takes approximately 2,700 liters of water to make one cotton t-shirt - enough drinking water for one person for 2.5 years!",
+                tip: "Buy quality clothes that last longer, shop second-hand, or choose organic cotton!"
+            },
+            {
+                question: "🔋 What happens to your carbon footprint when you unplug electronics?",
+                options: ["No change", "Slightly decreases", "Significantly decreases", "Increases"],
+                correct: 2,
+                explanation: "Phantom power draw from plugged-in devices accounts for 5-10% of residential energy use!",
+                tip: "Use power strips to easily cut phantom loads, or unplug chargers when not in use!"
+            },
+            {
+                question: "🌡️ By how much have global temperatures risen since pre-industrial times?",
+                options: ["0.5°C", "1.1°C", "2.0°C", "3.5°C"],
+                correct: 1,
+                explanation: "Global temperatures have risen by approximately 1.1°C, and we're working to limit warming to 1.5°C!",
+                tip: "Every fraction of a degree matters! Small actions by millions of people create big changes!"
+            },
+            {
+                question: "🛒 Which shopping habit reduces your carbon footprint most?",
+                options: ["Buying new items frequently", "Shopping online exclusively", "Buying local and seasonal", "Always choosing the cheapest option"],
+                correct: 2,
+                explanation: "Local and seasonal products require less transportation and storage energy!",
+                tip: "Visit farmers markets, join a CSA, or grow your own herbs and vegetables!"
+            },
+            {
+                question: "🏭 What percentage of global greenhouse gas emissions come from the top 100 companies?",
+                options: ["25%", "50%", "71%", "90%"],
+                correct: 2,
+                explanation: "Just 100 companies are responsible for 71% of global emissions, showing the importance of corporate responsibility!",
+                tip: "Support companies with strong environmental commitments and vote with your wallet!"
+            }
         ];
 
-        let ecoPoints = 0;
-        let timer = null;
-        let gameTime = 60; // 2 minutes
-        let selectedBuilding = null;
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 90;
+        let timer;
+        let startTime;
+        let selectedAnswer = null;
+        let correctAnswers = 0;
 
-        function startGame() {
-            ecoPoints = 0;
-            updateEcoPoints();
-            showScreen('game-screen');
-            createGrid();
-            createBuildingOptions();
+        function initializeGame() {
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            timeLeft = 90;
+            selectedAnswer = null;
+            startTime = Date.now();
+            
+            // Reset UI
+            document.getElementById('score').textContent = '0';
+            document.getElementById('timer').textContent = '90';
+            document.getElementById('question-number').textContent = '1';
+            document.getElementById('progress').style.width = '10%';
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            
+            displayQuestion();
             startTimer();
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function createGrid() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = '';
-            
-            for(let i = 0; i < 20; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                cell.onclick = () => placeBuilding(cell);
-                grid.appendChild(cell);
-            }
-        }
-
-        function createBuildingOptions() {
-            const container = document.getElementById('building-options');
-            container.innerHTML = '';
-            
-            buildings.forEach(building => {
-                const option = document.createElement('div');
-                option.className = 'building-option';
-                option.innerHTML = `
-                    <div class="building-icon">${building.icon}</div>
-                    <div class="building-name">${building.name}</div>
-                `;
-                option.onclick = () => selectBuilding(building);
-                container.appendChild(option);
-            });
-        }
-
-        function selectBuilding(building) {
-            selectedBuilding = building;
-            document.querySelectorAll('.building-option').forEach(option => {
-                option.style.background = option.querySelector('.building-name').textContent === building.name 
-                    ? '#e6f7f7' 
-                    : '';
-            });
-            showEcoInfo(building.info);
-        }
-
-        function placeBuilding(cell) {
-            if (!selectedBuilding || cell.textContent) return;
-            
-            cell.textContent = selectedBuilding.icon;
-            ecoPoints += selectedBuilding.points;
-            updateEcoPoints();
-            
-            // Add placement animation
-            cell.style.transform = 'scale(1.2)';
-            setTimeout(() => cell.style.transform = '', 200);
-            
-            // Show success message
-            showEcoInfo(`Great choice! +${selectedBuilding.points} eco points! 🌟`);
-        }
-
-        function showEcoInfo(message) {
-            const info = document.getElementById('eco-info');
-            info.textContent = message;
-            info.style.opacity = '1';
-            
-            setTimeout(() => {
-                info.style.opacity = '0';
-            }, 2000);
-        }
-
-        function updateEcoPoints() {
-            document.querySelectorAll('.eco-points').forEach(el => {
-                el.textContent = `Eco Points: ${ecoPoints}`;
-            });
-        }
-
         function startTimer() {
-            let timeLeft = gameTime;
-            const timerElement = document.querySelector('.timer');
-            
-            if (timer) clearInterval(timer);
-            
-            timerElement.textContent = timeLeft;
-            timerElement.className = 'timer';
-            
             timer = setInterval(() => {
                 timeLeft--;
-                timerElement.textContent = timeLeft;
-                
-                if (timeLeft <= 30) {
-                    timerElement.className = 'timer danger';
-                } else if (timeLeft <= 60) {
-                    timerElement.className = 'timer warning';
-                }
+                document.getElementById('timer').textContent = timeLeft;
                 
                 if (timeLeft <= 0) {
                     clearInterval(timer);
@@ -495,31 +567,160 @@
             }, 1000);
         }
 
-        function showHelp() {
-            document.getElementById('helpOverlay').style.display = 'flex';
+        function displayQuestion() {
+            const question = quizQuestions[currentQuestion];
+            document.getElementById('question').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectAnswer(index, optionDiv);
+                optionDiv.ontouchstart = () => selectAnswer(index, optionDiv); // Add touch support
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // Update progress
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('question-number').textContent = currentQuestion + 1;
         }
 
-        function hideHelp() {
-            document.getElementById('helpOverlay').style.display = 'none';
+        function selectAnswer(answerIndex, optionElement) {
+            if (selectedAnswer !== null) return; // Prevent multiple selections
+            
+            selectedAnswer = answerIndex;
+            const question = quizQuestions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            // Disable all options
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Show correct and incorrect answers
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === answerIndex && answerIndex !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Update score and show feedback
+            const feedbackElement = document.getElementById('feedback');
+            if (answerIndex === question.correct) {
+                correctAnswers++;
+                score += Math.max(10, Math.floor(timeLeft / 10) + 10); // Bonus points for faster answers
+                feedbackElement.className = 'feedback correct';
+                feedbackElement.innerHTML = `
+                    <strong>🎉 Correct!</strong><br>
+                    ${question.explanation}<br>
+                    <div class="eco-tip">💡 <strong>Eco Tip:</strong> ${question.tip}</div>
+                `;
+            } else {
+                feedbackElement.className = 'feedback incorrect';
+                feedbackElement.innerHTML = `
+                    <strong>❌ Incorrect</strong><br>
+                    The correct answer was: <strong>${question.options[question.correct]}</strong><br>
+                    ${question.explanation}<br>
+                    <div class="eco-tip">💡 <strong>Eco Tip:</strong> ${question.tip}</div>
+                `;
+            }
+            
+            feedbackElement.style.display = 'block';
+            document.getElementById('score').textContent = score;
+            
+            // Show next button or end game
+            if (currentQuestion < quizQuestions.length - 1) {
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                setTimeout(() => {
+                    endGame();
+                }, 3000);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            selectedAnswer = null;
+            
+            // Reset option styles
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.className = 'option';
+                option.style.pointerEvents = 'auto';
+            });
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            displayQuestion();
         }
 
         function endGame() {
             clearInterval(timer);
+            const timeTaken = Math.round((Date.now() - startTime) / 1000);
+            const percentage = (correctAnswers / quizQuestions.length) * 100;
             
-            let message;
-            if (ecoPoints >= 100) {
-                message = "Amazing! Your city is super eco-friendly! 🌟";
-            } else if (ecoPoints >= 70) {
-                message = "Great job! Your city is helping the Earth! 🌍";
-            } else if (ecoPoints >= 40) {
-                message = "Good start! Keep making your city greener! 🌱";
+            let grade, trophy;
+            if (percentage >= 90) {
+                grade = 'A+';
+                trophy = '🏆';
+            } else if (percentage >= 80) {
+                grade = 'A';
+                trophy = '🥇';
+            } else if (percentage >= 70) {
+                grade = 'B';
+                trophy = '🥈';
+            } else if (percentage >= 60) {
+                grade = 'C';
+                trophy = '🥉';
             } else {
-                message = "Try adding more eco-friendly buildings next time! 💪";
+                grade = 'D';
+                trophy = '📚';
             }
             
-            document.getElementById('end-message').textContent = message;
-            showScreen('end-screen');
+            // Update final stats
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('correct-answers').textContent = correctAnswers;
+            document.getElementById('time-taken').textContent = timeTaken;
+            document.getElementById('grade').textContent = grade;
+            document.querySelector('.trophy').textContent = trophy;
+            
+            // Show personalized eco tip based on performance
+            const ecoTips = [
+                "🌱 Remember: Small daily actions create big environmental changes over time!",
+                "♻️ Every sustainable choice you make inspires others to do the same!",
+                "🌍 You're part of a global movement working toward a healthier planet!",
+                "💚 Knowledge is power - share what you've learned with friends and family!",
+                "🌿 Consider tracking your carbon footprint and setting reduction goals!",
+                "🔋 Energy conservation at home is one of the easiest ways to make a difference!",
+                "🚴‍♀️ Transportation choices have a huge impact - explore eco-friendly alternatives!",
+                "🥕 Food choices matter - try incorporating more plant-based meals!",
+                "💧 Water conservation helps reduce energy use at treatment facilities!",
+                "🛍️ Conscious consumption - buy less, choose better, make it last!"
+            ];
+            
+            const randomTip = ecoTips[Math.floor(Math.random() * ecoTips.length)];
+            document.getElementById('eco-tip').textContent = randomTip;
+            
+            // Show game over screen
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('game-over').style.display = 'block';
         }
+
+        function restartGame() {
+            initializeGame();
+        }
+
+        // Initialize the game when page loads
+        window.onload = function() {
+            initializeGame();
+        };
     </script>
 </body>
 </html>

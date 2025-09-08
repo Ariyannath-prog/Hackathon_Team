@@ -3,498 +3,603 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recycle Sort Challenge - EcoTech</title>
+    <title>Eco Warriors: Recycling Sorting Challenge</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #c7f8f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+            padding: clamp(10px, 2vw, 15px);
         }
 
         .game-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 1rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            min-height: 600px;
-            position: relative;
-            overflow: hidden;
+            padding: clamp(15px, 4vw, 30px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 95%;
+            animation: slideIn 0.5s ease-out;
         }
 
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            transition: transform 0.5s ease-in-out;
-            background: white;
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        .screen.active {
-            transform: translateX(0);
-        }
-
-        .screen:not(.active) {
-            transform: translateX(100%);
-        }
-
-        .title {
-            color: #008080;
-            font-size: 2rem;
-            margin-bottom: 1rem;
+        h1 {
             text-align: center;
+            color: #2d3436;
+            margin-bottom: clamp(15px, 3vw, 20px);
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .score-timer {
+        .game-info {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: #f0f9f9;
-            border-radius: 10px;
-        }
-
-        .score, .timer {
-            font-size: 1.5rem;
-            color: #008080;
-            font-weight: bold;
-        }
-
-        .timer.warning {
-            color: #ff9800;
-            animation: pulse 1s infinite;
-        }
-
-        .timer.danger {
-            color: #f44336;
-        }
-
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            width: 100%;
-            height: 100%;
-        }
-
-        .items-container {
-            display: flex;
+            margin-bottom: clamp(15px, 3vw, 20px);
             flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            min-height: 100px;
-            padding: 1rem;
-            background: #f0f9f9;
+            gap: 10px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
             border-radius: 10px;
-            width: 100%;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .waste-item {
-            width: 60px;
-            height: 60px;
+            display: inline-block;
+            padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
+            margin: clamp(5px, 1vw, 10px);
+            background: white;
+            border: 3px solid #dfe6e9;
+            border-radius: 15px;
             cursor: grab;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             user-select: none;
-            touch-action: none;
-            transition: transform 0.2s;
-            position: relative;
-            font-size: 2.5rem;
+            touch-action: manipulation;
         }
 
-        .waste-item:hover {
+        .waste-item:hover, .waste-item:active {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .waste-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
             transform: scale(1.1);
         }
 
         .bins-container {
             display: flex;
             justify-content: space-around;
-            width: 100%;
-            gap: 1rem;
-            margin-top: auto;
+            margin-top: clamp(20px, 4vw, 40px);
+            flex-wrap: wrap;
+            gap: clamp(10px, 2vw, 20px);
         }
 
         .bin {
-            width: 100px;
-            height: 120px;
-            border: 3px solid #008080;
-            border-radius: 10px;
+            width: clamp(140px, 20vw, 180px);
+            height: clamp(160px, 25vw, 200px);
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
-            padding: 0.5rem;
-            background: #fff;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
             position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .bin-label {
-            font-size: 0.9rem;
-            text-align: center;
-            color: #008080;
-            font-weight: bold;
-            margin-top: 0.5rem;
+        .bin.dragover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .bin.correct {
+            animation: correctFlash 0.5s;
+        }
+
+        .bin.incorrect {
+            animation: incorrectShake 0.5s;
+        }
+
+        @keyframes correctFlash {
+            0%, 100% { background-color: inherit; }
+            50% { background-color: #00b894; }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .plastic-bin {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+        }
+
+        .paper-bin {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .organic-bin {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .glass-bin {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
         }
 
         .bin-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: clamp(2em, 6vw, 3em);
+            margin-bottom: clamp(5px, 1vw, 10px);
         }
 
-        .feedback {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 128, 128, 0.9);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+        .bin-label {
+            font-size: clamp(0.9em, 3vw, 1.2em);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .btn {
-            background: #008080;
+        .message {
+            text-align: center;
+            margin-top: clamp(15px, 3vw, 20px);
+            font-size: clamp(0.9em, 3vw, 1.2em);
+            font-weight: bold;
+            height: 30px;
+            color: #2d3436;
+        }
+
+        .message.success {
+            color: #00b894;
+            animation: bounce 0.5s;
+        }
+
+        .message.error {
+            color: #d63031;
+            animation: shake 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .restart-btn {
+            display: block;
+            margin: clamp(15px, 3vw, 20px) auto;
+            padding: clamp(10px, 2vw, 15px) clamp(25px, 5vw, 40px);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.1rem;
+            border-radius: 50px;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-            margin: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 300px;
         }
 
-        .btn:hover {
-            background: #006666;
-            transform: translateY(-2px);
+        .restart-btn:hover, .restart-btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .game-over {
+            display: none;
+            text-align: center;
+            padding: clamp(15px, 4vw, 30px);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            margin-top: clamp(15px, 3vw, 20px);
+            animation: slideIn 0.5s ease-out;
         }
 
-        @media (max-width: 600px) {
+        .game-over h2 {
+            font-size: clamp(1.5em, 5vw, 2em);
+            margin-bottom: clamp(10px, 2vw, 15px);
+        }
+
+        .game-over p {
+            font-size: clamp(0.9em, 3vw, 1.2em);
+            margin-bottom: clamp(5px, 1vw, 10px);
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .info-box {
+                width: 100%;
+                max-width: 300px;
+            }
+
             .bins-container {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
             }
 
             .bin {
-                width: 80px;
-                height: 100px;
+                width: clamp(200px, 60vw, 250px);
+                height: clamp(180px, 30vw, 220px);
             }
 
             .waste-item {
-                width: 50px;
-                height: 50px;
-                font-size: 2rem;
+                display: block;
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
             }
         }
-        #start-screen{
-            padding-bottom: 20px;
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .info-box {
+                font-size: 0.9em;
+            }
+
+            .waste-item {
+                font-size: 0.9em;
+                padding: 10px 12px;
+            }
+
+            .bin {
+                width: clamp(160px, 80vw, 200px);
+                height: clamp(140px, 40vw, 180px);
+            }
+
+            .bin-icon {
+                font-size: 2em;
+            }
+
+            .bin-label {
+                font-size: 0.9em;
+            }
+
+            .message {
+                font-size: 0.9em;
+            }
+
+            .game-over h2 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Start Screen -->
-        <div class="screen active" id="start-screen">
-            <h1 class="title">Recycle Sort Challenge</h1>
-            <div style="text-align: center; margin: 1rem 0; color: #666; max-width: 600px;">
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    Join the eco-friendly mission and become a recycling champion! 🌍♻️
-                </p>
-                <div style="background: #f0f9f9; padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
-                    <h2 style="color: #008080; margin-bottom: 1rem; font-size: 1.2rem;">How to Play:</h2>
-                    <ul style="list-style: none; line-height: 1.6; text-align: left;">
-                        <li>🔄 Drag waste items to their matching recycling bins</li>
-                        <li>✨ Score points for correct sorting (10 points each)</li>
-                        <li>⏰ Race against time - you have 60 seconds!</li>
-                        <li>🎯 Sort into these categories:</li>
-                    </ul>
-                   
-                </div>
-                
-            </div>
-            <button class="btn" onclick="startGame()" style="margin-top: 1rem;">Start Game</button>
+        <h1>🌍 Eco Warriors: Recycling Challenge 🌍</h1>
+        
+        <div class="game-info">
+            <div class="info-box">Score: <span id="score">0</span></div>
+            <div class="info-box">Time: <span id="timer">60</span>s</div>
+            <div class="info-box">Items Left: <span id="items-left">15</span></div>
         </div>
 
-        <!-- Game Screen -->
-        <div class="screen" id="game-screen">
-            <div class="score-timer">
-                <div class="score">Score: 0</div>
-                <div class="timer">60</div>
-            </div>
-            <div class="game-area">
-                <div class="items-container" id="items-container">
-                    <!-- Items will be added here by JavaScript -->
-                </div>
-                <div class="bins-container">
-                    <div class="bin" data-type="paper">
-                        <div class="bin-icon">📄</div>
-                        <div class="bin-label">Paper</div>
-                    </div>
-                    <div class="bin" data-type="plastic">
-                        <div class="bin-icon">🥤</div>
-                        <div class="bin-label">Plastic</div>
-                    </div>
-                    <div class="bin" data-type="organic">
-                        <div class="bin-icon">🍎</div>
-                        <div class="bin-label">Food Waste</div>
-                    </div>
-                </div>
-            </div>
-            <div class="feedback" id="feedback"></div>
+        <div id="waste-items">
+            <div class="waste-item" draggable="true" data-type="plastic">Plastic Bottle</div>
+            <div class="waste-item" draggable="true" data-type="paper">Newspaper</div>
+            <div class="waste-item" draggable="true" data-type="organic">Apple Core</div>
+            <div class="waste-item" draggable="true" data-type="glass">Glass Jar</div>
+            <div class="waste-item" draggable="true" data-type="plastic">Yogurt Container</div>
+            <div class="waste-item" draggable="true" data-type="paper">Cardboard Box</div>
+            <div class="waste-item" draggable="true" data-type="organic">Banana Peel</div>
+            <div class="waste-item" draggable="true" data-type="glass">Wine Bottle</div>
+            <div class="waste-item" draggable="true" data-type="plastic">Plastic Bag</div>
+            <div class="waste-item" draggable="true" data-type="paper">Magazine</div>
+            <div class="waste-item" draggable="true" data-type="organic">Egg Shells</div>
+            <div class="waste-item" draggable="true" data-type="plastic">Shampoo Bottle</div>
+            <div class="waste-item" draggable="true" data-type="paper">Office Paper</div>
+            <div class="waste-item" draggable="true" data-type="organic">Coffee Grounds</div>
+            <div class="waste-item" draggable="true" data-type="glass">Broken Mirror</div>
         </div>
 
-        <!-- End Screen -->
-        <div class="screen" id="end-screen">
-            <h1 class="title">Game Over!</h1>
-            <div style="font-size: 4rem; margin: 1rem;">🏆</div>
-            <div class="score" style="font-size: 2rem; margin: 1rem;">Final Score: 0</div>
-            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
-            <button class="btn" onclick="startGame()">Play Again</button>
-            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
-                Back to Games
-            </button>
+        <div class="bins-container">
+            <div class="bin plastic-bin" data-bin-type="plastic">
+                <div class="bin-icon">♻️</div>
+                <div class="bin-label">PLASTIC</div>
+            </div>
+            <div class="bin paper-bin" data-bin-type="paper">
+                <div class="bin-icon">📄</div>
+                <div class="bin-label">PAPER</div>
+            </div>
+            <div class="bin organic-bin" data-bin-type="organic">
+                <div class="bin-icon">🍃</div>
+                <div class="bin-label">ORGANIC</div>
+            </div>
+            <div class="bin glass-bin" data-bin-type="glass">
+                <div class="bin-icon">🍾</div>
+                <div class="bin-label">GLASS</div>
+            </div>
         </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="game-over" id="game-over">
+            <h2>🎉 Great Job, Eco Warrior! 🎉</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <p>Accuracy: <span id="accuracy">0</span>%</p>
+            <p id="performance-message"></p>
+        </div>
+
+        <button class="restart-btn" onclick="restartGame()">Restart Game</button>
     </div>
 
     <script>
-        const wasteItems = [
-            { emoji: "📰", type: "paper", name: "Newspaper" },
-            { emoji: "📦", type: "paper", name: "Cardboard Box" },
-            { emoji: "📄", type: "paper", name: "Paper" },
-            { emoji: "🥤", type: "plastic", name: "Plastic Cup" },
-            { emoji: "🍾", type: "plastic", name: "Plastic Bottle" },
-            { emoji: "💧", type: "plastic", name: "Water Bottle" },
-            { emoji: "🍎", type: "organic", name: "Apple Core" },
-            { emoji: "🍌", type: "organic", name: "Banana Peel" },
-            { emoji: "🥕", type: "organic", name: "Carrot Tops" }
-        ];
-
         let score = 0;
-        let timer = null;
-        let gameTime = 60; // 60 seconds game time
-        let currentItems = [];
-        let draggingElement = null;
-
-        function startGame() {
-            score = 0;
-            updateScore();
-            showScreen('game-screen');
-            createItems();
-            startTimer();
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function createItems() {
-            const container = document.getElementById('items-container');
-            container.innerHTML = '';
-            currentItems = [];
-
-            // Randomly select items
-            for(let i = 0; i < 6; i++) {
-                const item = wasteItems[Math.floor(Math.random() * wasteItems.length)];
-                currentItems.push(item);
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'waste-item';
-                itemElement.innerHTML = item.emoji;
-                itemElement.draggable = true;
-                itemElement.dataset.type = item.type;
-                
-                // Touch events
-                itemElement.addEventListener('touchstart', dragStart);
-                itemElement.addEventListener('touchmove', drag);
-                itemElement.addEventListener('touchend', dragEnd);
-                
-                // Mouse events
-                itemElement.addEventListener('mousedown', dragStart);
-                itemElement.addEventListener('mousemove', drag);
-                itemElement.addEventListener('mouseup', dragEnd);
-                
-                container.appendChild(itemElement);
-            }
-        }
+        let timeLeft = 60;
+        let itemsLeft = 15;
+        let totalAttempts = 0;
+        let correctAttempts = 0;
+        let timerInterval;
+        let draggedItem = null;
+        let gameActive = true;
 
         function startTimer() {
-            let timeLeft = gameTime;
-            const timerElement = document.querySelector('.timer');
-            
-            if (timer) clearInterval(timer);
-            
-            timerElement.textContent = timeLeft;
-            timerElement.className = 'timer';
-            
-            timer = setInterval(() => {
+            timerInterval = setInterval(() => {
                 timeLeft--;
-                timerElement.textContent = timeLeft;
+                document.getElementById('timer').textContent = timeLeft;
                 
                 if (timeLeft <= 10) {
-                    timerElement.className = 'timer danger';
-                } else if (timeLeft <= 20) {
-                    timerElement.className = 'timer warning';
+                    document.getElementById('timer').style.color = '#d63031';
                 }
                 
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
+                if (timeLeft <= 0 || itemsLeft <= 0) {
                     endGame();
                 }
             }, 1000);
         }
 
-        function dragStart(e) {
-            if (e.type === 'mousedown') {
-                draggingElement = e.target;
-                const rect = draggingElement.getBoundingClientRect();
-                draggingElement.style.position = 'fixed';
-                draggingElement.style.zIndex = 1000;
-                
-                function mouseMoveHandler(e) {
-                    drag(e);
-                }
-                
-                function mouseUpHandler(e) {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', mouseUpHandler);
-                    dragEnd(e);
-                }
-                
-                document.addEventListener('mousemove', mouseMoveHandler);
-                document.addEventListener('mouseup', mouseUpHandler);
-            } else if (e.type === 'touchstart') {
-                draggingElement = e.target;
-                const touch = e.touches[0];
-                const rect = draggingElement.getBoundingClientRect();
-                draggingElement.style.position = 'fixed';
-                draggingElement.style.zIndex = 1000;
+        function endGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            
+            const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('accuracy').textContent = accuracy;
+            
+            let performanceMessage = '';
+            if (accuracy >= 90) {
+                performanceMessage = '🌟 Outstanding! You\'re a recycling expert!';
+            } else if (accuracy >= 70) {
+                performanceMessage = '👏 Good job! You\'re helping save the planet!';
+            } else if (accuracy >= 50) {
+                performanceMessage = '💪 Keep practicing! Every effort counts!';
+            } else {
+                performanceMessage = '📚 Learn more about recycling to improve!';
             }
+            
+            document.getElementById('performance-message').textContent = performanceMessage;
+            document.getElementById('game-over').style.display = 'block';
+            
+            // Disable dragging
+            document.querySelectorAll('.waste-item').forEach(item => {
+                item.draggable = false;
+                item.style.opacity = '0.5';
+                item.style.cursor = 'not-allowed';
+            });
         }
 
-        function drag(e) {
-            if (!draggingElement) return;
-            
-            e.preventDefault();
-            
-            const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
-            const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
-            
-            draggingElement.style.left = clientX - draggingElement.offsetWidth / 2 + 'px';
-            draggingElement.style.top = clientY - draggingElement.offsetHeight / 2 + 'px';
-        }
+        // Drag and Drop functionality
+        document.querySelectorAll('.waste-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                if (!gameActive) return;
+                draggedItem = e.target;
+                e.target.classList.add('dragging');
+            });
 
-        function dragEnd(e) {
-            if (!draggingElement) return;
-            
-            const bins = document.querySelectorAll('.bin');
-            const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
-            const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
-            
-            let foundBin = false;
-            bins.forEach(bin => {
-                const rect = bin.getBoundingClientRect();
-                if (clientX >= rect.left && clientX <= rect.right &&
-                    clientY >= rect.top && clientY <= rect.bottom) {
-                    checkAnswer(draggingElement, bin);
-                    foundBin = true;
+            item.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+
+            // Touch support for mobile devices
+            item.addEventListener('touchstart', (e) => {
+                if (!gameActive) return;
+                draggedItem = e.target;
+                e.target.classList.add('dragging');
+            });
+
+            item.addEventListener('touchmove', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                draggedItem.style.position = 'absolute';
+                draggedItem.style.left = `${touch.pageX - draggedItem.offsetWidth / 2}px`;
+                draggedItem.style.top = `${touch.pageY - draggedItem.offsetHeight / 2}px`;
+            });
+
+            item.addEventListener('touchend', (e) => {
+                if (!gameActive) return;
+                e.target.classList.remove('dragging');
+                draggedItem.style.position = 'static';
+                
+                const touch = e.changedTouches[0];
+                const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+                const bin = dropTarget.closest('.bin');
+                
+                if (bin && draggedItem) {
+                    const itemType = draggedItem.dataset.type;
+                    const binType = bin.dataset.binType;
+                    
+                    totalAttempts++;
+                    
+                    if (itemType === binType) {
+                        score += 10;
+                        correctAttempts++;
+                        bin.classList.add('correct');
+                        showMessage('✅ Correct! Great recycling!', 'success');
+                        draggedItem.style.display = 'none';
+                        itemsLeft--;
+                        
+                        setTimeout(() => {
+                            bin.classList.remove('correct');
+                        }, 500);
+                    } else {
+                        score = Math.max(0, score - 5);
+                        bin.classList.add('incorrect');
+                        showMessage('❌ Wrong bin! Try again!', 'error');
+                        
+                        setTimeout(() => {
+                            bin.classList.remove('incorrect');
+                        }, 500);
+                    }
+                    
+                    updateScore();
+                }
+                draggedItem = null;
+            });
+        });
+
+        document.querySelectorAll('.bin').forEach(bin => {
+            bin.addEventListener('dragover', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                bin.classList.add('dragover');
+            });
+
+            bin.addEventListener('dragleave', (e) => {
+                bin.classList.remove('dragover');
+            });
+
+            bin.addEventListener('drop', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                bin.classList.remove('dragover');
+                
+                if (draggedItem) {
+                    const itemType = draggedItem.dataset.type;
+                    const binType = bin.dataset.binType;
+                    
+                    totalAttempts++;
+                    
+                    if (itemType === binType) {
+                        score += 10;
+                        correctAttempts++;
+                        bin.classList.add('correct');
+                        showMessage('✅ Correct! Great recycling!', 'success');
+                        draggedItem.style.display = 'none';
+                        itemsLeft--;
+                        
+                        setTimeout(() => {
+                            bin.classList.remove('correct');
+                        }, 500);
+                    } else {
+                        score = Math.max(0, score - 5);
+                        bin.classList.add('incorrect');
+                        showMessage('❌ Wrong bin! Try again!', 'error');
+                        
+                        setTimeout(() => {
+                            bin.classList.remove('incorrect');
+                        }, 500);
+                    }
+                    
+                    updateScore();
+                    draggedItem = null;
                 }
             });
-            
-            if (!foundBin) {
-                draggingElement.style.position = '';
-                draggingElement.style.zIndex = '';
-                draggingElement.style.left = '';
-                draggingElement.style.top = '';
-            }
-            
-            draggingElement = null;
-        }
+        });
 
-        function checkAnswer(item, bin) {
-            const isCorrect = item.dataset.type === bin.dataset.type;
-            showFeedback(isCorrect);
-            
-            if (isCorrect) {
-                score += 10;
-                updateScore();
-                item.remove();
-                
-                // Check if all items are sorted
-                if (document.querySelectorAll('.waste-item').length === 0) {
-                    createItems();
-                }
-            } else {
-                item.style.position = '';
-                item.style.zIndex = '';
-                item.style.left = '';
-                item.style.top = '';
-            }
-        }
-
-        function showFeedback(isCorrect) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = isCorrect ? '✨ Great job! ✨' : '❌ Try again! ❌';
-            feedback.style.opacity = '1';
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
             
             setTimeout(() => {
-                feedback.style.opacity = '0';
-            }, 1000);
+                messageEl.textContent = '';
+                messageEl.className = 'message';
+            }, 2000);
         }
 
         function updateScore() {
-            document.querySelector('.score').textContent = `Score: ${score}`;
+            document.getElementById('score').textContent = score;
+            document.getElementById('items-left').textContent = itemsLeft;
         }
 
-        function endGame() {
-            clearInterval(timer);
-            document.getElementById('end-screen').querySelector('.score').textContent = `Final Score: ${score}`;
+        function restartGame() {
+            score = 0;
+            timeLeft = 60;
+            itemsLeft = 15;
+            totalAttempts = 0;
+            correctAttempts = 0;
+            gameActive = true;
             
-            let message;
-            if (score >= 100) {
-                message = "Amazing! You're a recycling champion! 🌟";
-            } else if (score >= 70) {
-                message = "Great job! You're helping save the Earth! 🌍";
-            } else if (score >= 40) {
-                message = "Good effort! Keep practicing! 🌱";
-            } else {
-                message = "Keep trying! You'll be a recycling expert soon! 💪";
-            }
+            clearInterval(timerInterval);
             
-            document.getElementById('end-message').textContent = message;
-            showScreen('end-screen');
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('timer').style.color = '#2d3436';
+            document.getElementById('items-left').textContent = itemsLeft;
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('message').textContent = '';
+            
+            document.querySelectorAll('.waste-item').forEach(item => {
+                item.style.display = 'inline-block';
+                item.draggable = true;
+                item.style.opacity = '1';
+                item.style.cursor = 'grab';
+                item.style.position = 'static';
+            });
+            
+            startTimer();
         }
 
-        // Prevent default drag behavior
-        document.addEventListener('dragstart', e => e.preventDefault());
+        // Start the game when page loads
+        startTimer();
     </script>
 </body>
 </html>
