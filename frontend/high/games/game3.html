@@ -3,523 +3,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eco City Builder - EcoTech</title>
+    <title>Eco Hangman</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background-color: #c7f8f8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-        }
-
-        .game-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            min-height: 600px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            min-height: 600px;
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            transition: transform 0.5s ease-in-out;
-            background: white;
-            gap: 1.5rem;
-        }
-
-        .screen.active {
-            transform: translateX(0);
-        }
-
-        .screen:not(.active) {
-            transform: translateX(100%);
-        }
-
-        .title {
-            color: #008080;
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            height: 100vh;
+            background-color: #228B22; /* Forest green */
+            font-family: Arial, sans-serif;
+            color: white;
             text-align: center;
         }
 
-        .game-stats {
-            display: flex;
-            justify-content: space-between;
+        #game-container {
+            width: 90vw;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        #canvas {
             width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: #f0f9f9;
-            border-radius: 10px;
+            max-width: 300px;
+            height: 200px;
+            background-color: #556B2F; /* Olive green */
+            border: 2px solid #fff;
+            margin: 0 auto;
         }
 
-        .score, .timer, .eco-points {
-            font-size: 1.2rem;
-            color: #008080;
-            font-weight: bold;
+        #word-display {
+            font-size: 2em;
+            margin: 20px 0;
+            letter-spacing: 5px;
         }
 
-        .timer.warning {
-            color: #ff9800;
-            animation: pulse 1s infinite;
+        #guesses-left {
+            font-size: 1.2em;
+            margin: 10px 0;
         }
 
-        .timer.danger {
-            color: #f44336;
+        #guessed-letters {
+            font-size: 1.2em;
+            margin: 10px 0;
         }
 
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-            margin: 1rem 0;
-            background: #e6f7f7;
-            padding: 1rem;
-            border-radius: 10px;
+        #input-container {
+            margin: 20px 0;
         }
 
-        .grid-cell {
-            aspect-ratio: 1;
-            background: #fff;
-            border: 2px solid #008080;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .grid-cell:hover {
-            background: #f0f9f9;
-            transform: scale(1.05);
-        }
-
-        .building-options {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f0f9f9;
-            border-radius: 10px;
-        }
-
-        .building-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .building-option:hover {
-            background: #e6f7f7;
-            transform: scale(1.1);
-        }
-
-        .building-icon {
-            font-size: 2rem;
-        }
-
-        .building-name {
-            font-size: 0.8rem;
-            color: #008080;
+        #letter-input {
+            padding: 10px;
+            font-size: 1em;
+            width: 50px;
+            text-transform: uppercase;
             text-align: center;
         }
 
-        .eco-info {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 128, 128, 0.9);
+        #guess-btn, #hint-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #32CD32;
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .help-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #008080;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
             border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            cursor: pointer;
+            margin: 0 5px;
         }
 
-        .help-button:hover {
-            transform: scale(1.1);
+        #hint-display {
+            font-size: 1em;
+            margin: 10px 0;
+            color: #FFD700; /* Gold for hints */
         }
 
-        .help-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .help-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
+        #instructions {
+            font-size: 1em;
+            margin: 20px 0;
             max-width: 500px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            line-height: 1.5;
+            box-sizing: border-box;
         }
 
-        .help-content h2 {
-            color: #008080;
-            margin-bottom: 1rem;
-            text-align: center;
+        #keyboard {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
         }
 
-        .help-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .help-content li {
-            margin: 1rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #333;
-        }
-
-        .close-help {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .btn {
-            background: #008080;
+        .key-btn {
+            padding: 10px;
+            font-size: 1em;
+            background-color: #333;
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.1rem;
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-            margin: 0.5rem;
+            touch-action: manipulation;
         }
 
-        .btn:hover {
-            background: #006666;
-            transform: translateY(-2px);
+        .key-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
+        /* Mobile adjustments */
         @media (max-width: 600px) {
-            .game-grid {
+            #canvas {
+                width: 80vw;
+                height: 150px;
+            }
+
+            #word-display {
+                font-size: 1.5em;
+                letter-spacing: 3px;
+            }
+
+            #letter-input {
+                width: 40px;
+                font-size: 0.9em;
+            }
+
+            #guess-btn, #hint-btn {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+
+            #keyboard {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 3px;
+            }
+
+            .key-btn {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+
+            #instructions {
+                font-size: 0.8em;
+                margin: 10px;
+                padding: 10px;
+                max-width: 90%;
+                line-height: 1.4;
+            }
+        }
+
+        /* Smaller screens */
+        @media (max-width: 400px) {
+            #canvas {
+                width: 90vw;
+                height: 120px;
+            }
+
+            #word-display {
+                font-size: 1.2em;
+                letter-spacing: 2px;
+            }
+
+            #guesses-left, #guessed-letters, #hint-display {
+                font-size: 1em;
+            }
+
+            #letter-input {
+                width: 35px;
+                font-size: 0.8em;
+            }
+
+            #guess-btn, #hint-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+
+            #keyboard {
                 grid-template-columns: repeat(4, 1fr);
+                gap: 2px;
             }
 
-            .building-options {
-                gap: 0.5rem;
+            .key-btn {
+                padding: 6px;
+                font-size: 0.7em;
             }
 
-            .building-icon {
-                font-size: 1.5rem;
+            #instructions {
+                font-size: 0.7em;
+                margin: 5px;
+                padding: 8px;
+                max-width: 95%;
+                line-height: 1.3;
             }
-
-            .building-name {
-                font-size: 0.7rem;
-            }
+        }
+        h1{
+            padding-top: 50px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Start Screen -->
-        <div class="screen active" id="start-screen">
-            <div style="text-align: center;">
-                <h1 class="title">Eco City Builder</h1>
-                <p style="color: #666; font-size: 1.1rem; line-height: 1.6;">
-                    Build your own eco-friendly city! 🌱<br>
-                    Place green buildings and save energy!
-                </p>
-            </div>
-            <div style="font-size: 5rem; margin: 1rem 0; animation: float 2s infinite ease-in-out;">🏗️</div>
-            <div style="text-align: center; margin: 1rem 0; color: #008080;">
-                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Play:</p>
-                <ul style="list-style: none; line-height: 1.6;">
-                    <li>🎯 Select eco-friendly buildings</li>
-                    <li>🌟 Place them on the grid</li>
-                    <li>⏰ Build your city in 2 minutes</li>
-                    <li>🎮 Earn eco points for each building!</li>
-                </ul>
-            </div>
-            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 1rem 3rem;">
-                Start Building! 🚀
-            </button>
+    <div id="game-container">
+        <h1>Eco Hangman</h1>
+        <div id="instructions">
+            <strong>How to Play:</strong> Guess the environmental science word by entering one letter at a time. You have 6 wrong guesses before the game ends. Each wrong guess adds a part to the hangman. Use the on-screen keyboard or type a letter and click "Guess". Click "Hint" for a clue about the word (costs 1 guess). Win by revealing the full word before running out of guesses!
         </div>
-
-        <style>
-            @keyframes float {
-                0% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
-                100% { transform: translateY(0px); }
-            }
-        </style>
-
-        <!-- Game Screen -->
-        <div class="screen" id="game-screen">
-            <button class="help-button" onclick="showHelp()">❔</button>
-            <div class="game-stats">
-                <div class="eco-points">Eco Points: 0</div>
-                <div class="timer">120</div>
-            </div>
-
-            <div class="building-options" id="building-options">
-                <!-- Building options will be added here by JavaScript -->
-            </div>
-
-            <!-- Help Overlay -->
-            <div class="help-overlay" id="helpOverlay">
-                <div class="help-content">
-                    <button class="close-help" onclick="hideHelp()">×</button>
-                    <h2>How to Play</h2>
-                    <ul>
-                        <li>🎯 Select a building from the options above</li>
-                        <li>🌟 Click any empty square to place your building</li>
-                        <li>💎 Each building gives different eco points:</li>
-                        <li>⏰ Complete your city within 1 minutes!</li>
-                        <li>🎮 Try to get 100+ points for the best score!</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="game-grid" id="game-grid">
-                <!-- Grid cells will be added here by JavaScript -->
-            </div>
-
-            <div class="eco-info" id="eco-info"></div>
+        <canvas id="canvas"></canvas>
+        <div id="word-display"></div>
+        <div id="guesses-left">Guesses Left: 6</div>
+        <div id="guessed-letters">Guessed Letters: </div>
+        <div id="hint-display">Hint: </div>
+        <div id="input-container">
+            <input type="text" id="letter-input" maxlength="1" placeholder="A-Z">
+            <button id="guess-btn">Guess</button>
+            <button id="hint-btn">Hint</button>
         </div>
-
-        <!-- End Screen -->
-        <div class="screen" id="end-screen">
-            <h1 class="title">City Complete!</h1>
-            <div style="font-size: 4rem; margin: 1rem;">🌆</div>
-            <div class="eco-points" style="font-size: 2rem; margin: 1rem;">Eco Points: 0</div>
-            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
-            <button class="btn" onclick="startGame()">Build Again</button>
-            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
-                Back to Games
-            </button>
-        </div>
+        <div id="keyboard"></div>
     </div>
 
     <script>
-        const buildings = [
-            { icon: "🌳", name: "Tree", points: 5, info: "Trees clean our air and give us shade!" },
-            { icon: "☀️", name: "Solar Panel", points: 10, info: "Solar panels make clean energy from the sun!" },
-            { icon: "🏡", name: "Eco Home", points: 15, info: "These homes use less energy to stay cool!" },
-            { icon: "🚲", name: "Bike Path", points: 8, info: "Riding bikes helps keep our air clean!" },
-            { icon: "🌺", name: "Garden", points: 7, info: "Gardens help save water and feed people!" },
-            { icon: "♻️", name: "Recycling Center", points: 12, info: "Recycling helps make new things from old ones!" }
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const wordDisplay = document.getElementById('word-display');
+        const guessesLeftElement = document.getElementById('guesses-left');
+        const guessedLettersElement = document.getElementById('guessed-letters');
+        const hintDisplay = document.getElementById('hint-display');
+        const letterInput = document.getElementById('letter-input');
+        const guessButton = document.getElementById('guess-btn');
+        const hintButton = document.getElementById('hint-btn');
+        const keyboard = document.getElementById('keyboard');
+
+        // Environmental science words with hints
+        const words = [
+            { word: 'ECOSYSTEM', hint: 'A community of living organisms interacting with their environment.' },
+            { word: 'POLLUTION', hint: 'Harmful substances introduced into the environment.' },
+            { word: 'RECYCLING', hint: 'Process of reusing materials to reduce waste.' },
+            { word: 'BIODIVERSITY', hint: 'Variety of life in an ecosystem.' },
+            { word: 'CARBON', hint: 'Element central to greenhouse gas emissions.' },
+            { word: 'SUSTAINABLE', hint: 'Practices that meet needs without harming future generations.' },
+            { word: 'RENEWABLE', hint: 'Resources that can be naturally replenished.' },
+            { word: 'DEFORESTATION', hint: 'Clearing of forests leading to environmental harm.' },
+            { word: 'GREENHOUSE', hint: 'Gases trapping heat in the atmosphere.' },
+            { word: 'COMPOST', hint: 'Organic matter decomposed for soil enrichment.' }
         ];
 
-        let ecoPoints = 0;
-        let timer = null;
-        let gameTime = 60; // 2 minutes
-        let selectedBuilding = null;
+        let currentWord = '';
+        let currentHint = '';
+        let displayedWord = [];
+        let guessedLetters = [];
+        let guessesLeft = 6;
+        let gameOver = false;
 
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth > 300 ? 300 : canvas.parentElement.clientWidth * 0.8;
+            canvas.height = canvas.width * 2 / 3;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Draw hangman
+        function drawHangman() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+
+            // Base
+            if (guessesLeft < 6) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.1, canvas.height * 0.9);
+                ctx.lineTo(canvas.width * 0.4, canvas.height * 0.9);
+                ctx.stroke();
+            }
+            // Pole
+            if (guessesLeft < 5) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.25, canvas.height * 0.9);
+                ctx.lineTo(canvas.width * 0.25, canvas.height * 0.1);
+                ctx.stroke();
+            }
+            // Top bar
+            if (guessesLeft < 4) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.25, canvas.height * 0.1);
+                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.1);
+                ctx.stroke();
+            }
+            // Rope
+            if (guessesLeft < 3) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.5, canvas.height * 0.1);
+                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.2);
+                ctx.stroke();
+            }
+            // Head
+            if (guessesLeft < 2) {
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.5, canvas.height * 0.25, canvas.height * 0.05, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            // Body
+            if (guessesLeft < 1) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.5, canvas.height * 0.3);
+                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.5);
+                ctx.stroke();
+            }
+        }
+
+        // Start new game
         function startGame() {
-            ecoPoints = 0;
-            updateEcoPoints();
-            showScreen('game-screen');
-            createGrid();
-            createBuildingOptions();
-            startTimer();
+            const wordObj = words[Math.floor(Math.random() * words.length)];
+            currentWord = wordObj.word;
+            currentHint = wordObj.hint;
+            displayedWord = Array(currentWord.length).fill('_');
+            guessedLetters = [];
+            guessesLeft = 6;
+            gameOver = false;
+            hintDisplay.textContent = 'Hint: ';
+            updateDisplay();
+            drawHangman();
+            createKeyboard();
+            letterInput.disabled = false;
+            guessButton.disabled = false;
+            hintButton.disabled = false;
+            letterInput.value = '';
+            letterInput.focus();
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function createGrid() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = '';
-            
-            for(let i = 0; i < 20; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                cell.onclick = () => placeBuilding(cell);
-                grid.appendChild(cell);
-            }
-        }
-
-        function createBuildingOptions() {
-            const container = document.getElementById('building-options');
-            container.innerHTML = '';
-            
-            buildings.forEach(building => {
-                const option = document.createElement('div');
-                option.className = 'building-option';
-                option.innerHTML = `
-                    <div class="building-icon">${building.icon}</div>
-                    <div class="building-name">${building.name}</div>
-                `;
-                option.onclick = () => selectBuilding(building);
-                container.appendChild(option);
-            });
-        }
-
-        function selectBuilding(building) {
-            selectedBuilding = building;
-            document.querySelectorAll('.building-option').forEach(option => {
-                option.style.background = option.querySelector('.building-name').textContent === building.name 
-                    ? '#e6f7f7' 
-                    : '';
-            });
-            showEcoInfo(building.info);
-        }
-
-        function placeBuilding(cell) {
-            if (!selectedBuilding || cell.textContent) return;
-            
-            cell.textContent = selectedBuilding.icon;
-            ecoPoints += selectedBuilding.points;
-            updateEcoPoints();
-            
-            // Add placement animation
-            cell.style.transform = 'scale(1.2)';
-            setTimeout(() => cell.style.transform = '', 200);
-            
-            // Show success message
-            showEcoInfo(`Great choice! +${selectedBuilding.points} eco points! 🌟`);
-        }
-
-        function showEcoInfo(message) {
-            const info = document.getElementById('eco-info');
-            info.textContent = message;
-            info.style.opacity = '1';
-            
-            setTimeout(() => {
-                info.style.opacity = '0';
-            }, 2000);
-        }
-
-        function updateEcoPoints() {
-            document.querySelectorAll('.eco-points').forEach(el => {
-                el.textContent = `Eco Points: ${ecoPoints}`;
-            });
-        }
-
-        function startTimer() {
-            let timeLeft = gameTime;
-            const timerElement = document.querySelector('.timer');
-            
-            if (timer) clearInterval(timer);
-            
-            timerElement.textContent = timeLeft;
-            timerElement.className = 'timer';
-            
-            timer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-                
-                if (timeLeft <= 30) {
-                    timerElement.className = 'timer danger';
-                } else if (timeLeft <= 60) {
-                    timerElement.className = 'timer warning';
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        function showHelp() {
-            document.getElementById('helpOverlay').style.display = 'flex';
-        }
-
-        function hideHelp() {
-            document.getElementById('helpOverlay').style.display = 'none';
-        }
-
-        function endGame() {
-            clearInterval(timer);
-            
-            let message;
-            if (ecoPoints >= 100) {
-                message = "Amazing! Your city is super eco-friendly! 🌟";
-            } else if (ecoPoints >= 70) {
-                message = "Great job! Your city is helping the Earth! 🌍";
-            } else if (ecoPoints >= 40) {
-                message = "Good start! Keep making your city greener! 🌱";
+        // Update word and guesses display
+        function updateDisplay() {
+            if (gameOver && guessesLeft === 0) {
+                wordDisplay.textContent = currentWord.split('').join(' ');
             } else {
-                message = "Try adding more eco-friendly buildings next time! 💪";
+                wordDisplay.textContent = displayedWord.join(' ');
             }
-            
-            document.getElementById('end-message').textContent = message;
-            showScreen('end-screen');
+            guessesLeftElement.textContent = `Guesses Left: ${guessesLeft}`;
+            guessedLettersElement.textContent = `Guessed Letters: ${guessedLetters.join(', ')}`;
         }
+
+        // Create virtual keyboard
+        function createKeyboard() {
+            keyboard.innerHTML = '';
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            letters.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.textContent = letter;
+                btn.classList.add('key-btn');
+                btn.addEventListener('click', () => handleGuess(letter));
+                if (guessedLetters.includes(letter)) {
+                    btn.disabled = true;
+                }
+                keyboard.appendChild(btn);
+            });
+        }
+
+        // Handle guess
+        function handleGuess(letter) {
+            if (gameOver || guessedLetters.includes(letter)) return;
+
+            letter = letter.toUpperCase();
+            guessedLetters.push(letter);
+
+            if (currentWord.includes(letter)) {
+                for (let i = 0; i < currentWord.length; i++) {
+                    if (currentWord[i] === letter) {
+                        displayedWord[i] = letter;
+                    }
+                }
+            } else {
+                guessesLeft--;
+                drawHangman();
+            }
+
+            updateDisplay();
+            createKeyboard();
+
+            // Check win/lose
+            if (displayedWord.join('') === currentWord) {
+                gameOver = true;
+                setTimeout(() => {
+                    alert('You Win! The word was ' + currentWord);
+                    startGame();
+                }, 100);
+            } else if (guessesLeft === 0) {
+                gameOver = true;
+                updateDisplay(); // Show the full word
+                setTimeout(() => {
+                    alert('Game Over! The word was ' + currentWord);
+                    startGame();
+                }, 100);
+            }
+        }
+
+        // Handle hint
+        function showHint() {
+            if (gameOver || guessesLeft === 0) return;
+            if (hintDisplay.textContent === 'Hint: ' + currentHint) return; // Hint already shown
+            guessesLeft--;
+            drawHangman();
+            hintDisplay.textContent = 'Hint: ' + currentHint;
+            updateDisplay();
+            if (guessesLeft === 0) {
+                gameOver = true;
+                updateDisplay(); // Show the full word
+                setTimeout(() => {
+                    alert('Game Over! The word was ' + currentWord);
+                    startGame();
+                }, 100);
+            }
+        }
+
+        // Input handling
+        guessButton.addEventListener('click', () => {
+            const letter = letterInput.value.toUpperCase();
+            if (/^[A-Z]$/.test(letter)) {
+                handleGuess(letter);
+                letterInput.value = '';
+            }
+        });
+
+        hintButton.addEventListener('click', showHint);
+
+        letterInput.addEventListener('input', () => {
+            letterInput.value = letterInput.value.toUpperCase();
+        });
+
+        letterInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                guessButton.click();
+            }
+        });
+
+        // Initialize
+        startGame();
     </script>
 </body>
 </html>

@@ -3,498 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recycle Sort Challenge - EcoTech</title>
+    <title>Renewable Energy Tycoon</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background-color: #c7f8f8;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-        }
-
-        .game-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            min-height: 600px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            transition: transform 0.5s ease-in-out;
-            background: white;
-        }
-
-        .screen.active {
-            transform: translateX(0);
-        }
-
-        .screen:not(.active) {
-            transform: translateX(100%);
-        }
-
-        .title {
-            color: #008080;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .score-timer {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: #f0f9f9;
+            background-color: #fff;
+            padding: 20px;
             border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+            margin: 20px;
         }
 
-        .score, .timer {
-            font-size: 1.5rem;
-            color: #008080;
-            font-weight: bold;
+        h1 {
+            color: #228b22;
+            margin-bottom: 15px;
+            font-size: 1.8em;
         }
 
-        .timer.warning {
-            color: #ff9800;
-            animation: pulse 1s infinite;
+        .how-to-play {
+            margin-bottom: 20px;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
         }
 
-        .timer.danger {
-            color: #f44336;
+        .how-to-play h2 {
+            color: #228b22;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .how-to-play ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            font-size: 0.9em;
         }
 
         .game-area {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            width: 60%;
+        }
+
+        .cell {
             width: 100%;
-            height: 100%;
-        }
-
-        .items-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            min-height: 100px;
-            padding: 1rem;
-            background: #f0f9f9;
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .waste-item {
-            width: 60px;
-            height: 60px;
-            cursor: grab;
-            user-select: none;
-            touch-action: none;
-            transition: transform 0.2s;
-            position: relative;
-            font-size: 2.5rem;
-        }
-
-        .waste-item:hover {
-            transform: scale(1.1);
-        }
-
-        .bins-container {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            gap: 1rem;
-            margin-top: auto;
-        }
-
-        .bin {
-            width: 100px;
-            height: 120px;
-            border: 3px solid #008080;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0.5rem;
-            background: #fff;
+            padding-top: 100%; /* Square aspect ratio */
+            background-color: #e0e0e0;
+            cursor: pointer;
             position: relative;
         }
 
-        .bin-label {
-            font-size: 0.9rem;
-            text-align: center;
-            color: #008080;
-            font-weight: bold;
-            margin-top: 0.5rem;
-        }
-
-        .bin-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .feedback {
-            position: fixed;
+        .cell .icon {
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 128, 128, 0.9);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+            font-size: 1.8em;
         }
 
-        .btn {
-            background: #008080;
+        .cell.renewable .icon::before {
+            content: '☀️'; /* Solar/wind icon */
+            color: #ffd700;
+        }
+
+        .cell.non-renewable .icon::before {
+            content: '🏭'; /* Factory icon */
+            color: #808080;
+        }
+
+        .cell.building .icon::before {
+            content: '🏠'; /* House icon */
+            color: #4169e1;
+        }
+
+        .controls {
+            width: 35%;
+            padding-left: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            background-color: #228b22;
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-size: 1.1rem;
+            border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-            margin: 0.5rem;
+            font-size: 0.9em;
         }
 
-        .btn:hover {
-            background: #006666;
-            transform: translateY(-2px);
+        button:hover {
+            background-color: #006400;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .meter {
+            margin: 10px 0;
+            font-size: 0.9em;
         }
 
-        @media (max-width: 600px) {
-            .bins-container {
-                flex-wrap: wrap;
+        .bar {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            transition: width 0.5s;
+        }
+
+        #pollution-fill {
+            background-color: #ff4500;
+        }
+
+        #population-fill {
+            background-color: #228b22;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #ff0000;
+        }
+
+        #end-screen {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #end-screen h2 {
+            color: #228b22;
+            font-size: 1.5em;
+        }
+
+        #ending-message {
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                width: 95%;
             }
 
-            .bin {
-                width: 80px;
-                height: 100px;
+            .game-area {
+                flex-direction: column;
+                gap: 15px;
             }
 
-            .waste-item {
-                width: 50px;
-                height: 50px;
-                font-size: 2rem;
+            .grid {
+                width: 100%;
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .controls {
+                width: 100%;
+                padding-left: 0;
+                margin-top: 15px;
+            }
+
+            .cell .icon {
+                font-size: 1.5em;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .how-to-play h2 {
+                font-size: 1.2em;
+            }
+
+            .how-to-play ul {
+                font-size: 0.85em;
             }
         }
-        #start-screen{
-            padding-bottom: 20px;
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cell .icon {
+                font-size: 1.2em;
+            }
+
+            button {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+
+            .meter {
+                font-size: 0.8em;
+            }
+
+            #message, #ending-message {
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Start Screen -->
-        <div class="screen active" id="start-screen">
-            <h1 class="title">Recycle Sort Challenge</h1>
-            <div style="text-align: center; margin: 1rem 0; color: #666; max-width: 600px;">
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    Join the eco-friendly mission and become a recycling champion! 🌍♻️
-                </p>
-                <div style="background: #f0f9f9; padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
-                    <h2 style="color: #008080; margin-bottom: 1rem; font-size: 1.2rem;">How to Play:</h2>
-                    <ul style="list-style: none; line-height: 1.6; text-align: left;">
-                        <li>🔄 Drag waste items to their matching recycling bins</li>
-                        <li>✨ Score points for correct sorting (10 points each)</li>
-                        <li>⏰ Race against time - you have 60 seconds!</li>
-                        <li>🎯 Sort into these categories:</li>
-                    </ul>
-                   
-                </div>
-                
-            </div>
-            <button class="btn" onclick="startGame()" style="margin-top: 1rem;">Start Game</button>
+    <div class="container">
+        <h1>Renewable Energy Tycoon</h1>
+        <div class="how-to-play">
+            <h2>How to Play</h2>
+            <ul>
+                <li><strong>Objective:</strong> Build a city by placing energy sources and growing your population to 100 while keeping pollution low.</li>
+                <li><strong>Energy Sources:</strong> Choose between renewable (cost: 50, low pollution) or non-renewable (cost: 30, high pollution) energy sources.</li>
+                <li><strong>Gameplay:</strong> Click a button to select an energy type, then click an empty grid cell to place it. Use "Next Turn" to progress.</li>
+                <li><strong>Money:</strong> Earn money based on population growth. Spend it to build energy sources.</li>
+                <li><strong>Pollution:</strong> Non-renewable sources increase pollution. High pollution (>100) ends the game in failure.</li>
+                <li><strong>Endings:</strong> Reach 100 population with low pollution for a green utopia, moderate pollution for a balanced city, or fail by pollution or time (20 turns).</li>
+            </ul>
         </div>
-
-        <!-- Game Screen -->
-        <div class="screen" id="game-screen">
-            <div class="score-timer">
-                <div class="score">Score: 0</div>
-                <div class="timer">60</div>
-            </div>
-            <div class="game-area">
-                <div class="items-container" id="items-container">
-                    <!-- Items will be added here by JavaScript -->
+        <div class="game-area">
+            <div class="grid" id="grid"></div>
+            <div class="controls">
+                <button id="build-renewable">Build Renewable Energy (Cost: 50)</button>
+                <button id="build-non-renewable">Build Non-Renewable Energy (Cost: 30)</button>
+                <div class="meter">
+                    Money: <span id="money">100</span>
                 </div>
-                <div class="bins-container">
-                    <div class="bin" data-type="paper">
-                        <div class="bin-icon">📄</div>
-                        <div class="bin-label">Paper</div>
-                    </div>
-                    <div class="bin" data-type="plastic">
-                        <div class="bin-icon">🥤</div>
-                        <div class="bin-label">Plastic</div>
-                    </div>
-                    <div class="bin" data-type="organic">
-                        <div class="bin-icon">🍎</div>
-                        <div class="bin-label">Food Waste</div>
-                    </div>
+                <div class="meter">
+                    Pollution:
+                    <div class="bar"><div class="fill" id="pollution-fill" style="width: 0%;"></div></div>
                 </div>
+                <div class="meter">
+                    Population:
+                    <div class="bar"><div class="fill" id="population-fill" style="width: 0%;"></div></div>
+                </div>
+                <button id="next-turn">Next Turn</button>
+                <div id="message"></div>
             </div>
-            <div class="feedback" id="feedback"></div>
         </div>
-
-        <!-- End Screen -->
-        <div class="screen" id="end-screen">
-            <h1 class="title">Game Over!</h1>
-            <div style="font-size: 4rem; margin: 1rem;">🏆</div>
-            <div class="score" style="font-size: 2rem; margin: 1rem;">Final Score: 0</div>
-            <p id="end-message" style="text-align: center; margin: 1rem; color: #666;"></p>
-            <button class="btn" onclick="startGame()">Play Again</button>
-            <button class="btn" onclick="window.location.href='index.html'" style="background: #666;">
-                Back to Games
-            </button>
+        <div id="end-screen">
+            <h2>Game Over!</h2>
+            <div id="ending-message"></div>
+            <button id="restart">Play Again</button>
         </div>
     </div>
 
     <script>
-        const wasteItems = [
-            { emoji: "📰", type: "paper", name: "Newspaper" },
-            { emoji: "📦", type: "paper", name: "Cardboard Box" },
-            { emoji: "📄", type: "paper", name: "Paper" },
-            { emoji: "🥤", type: "plastic", name: "Plastic Cup" },
-            { emoji: "🍾", type: "plastic", name: "Plastic Bottle" },
-            { emoji: "💧", type: "plastic", name: "Water Bottle" },
-            { emoji: "🍎", type: "organic", name: "Apple Core" },
-            { emoji: "🍌", type: "organic", name: "Banana Peel" },
-            { emoji: "🥕", type: "organic", name: "Carrot Tops" }
-        ];
+        const GRID_SIZE = 5;
+        const MAX_POLLUTION = 100;
+        const GOAL_POPULATION = 100;
+        const grid = [];
+        let selectedType = null;
+        let money = 100;
+        let pollution = 0;
+        let population = 0;
+        let turns = 0;
 
-        let score = 0;
-        let timer = null;
-        let gameTime = 60; // 60 seconds game time
-        let currentItems = [];
-        let draggingElement = null;
+        const gridEl = document.getElementById('grid');
+        const moneyEl = document.getElementById('money');
+        const pollutionFill = document.getElementById('pollution-fill');
+        const populationFill = document.getElementById('population-fill');
+        const messageEl = document.getElementById('message');
+        const endScreen = document.getElementById('end-screen');
+        const endingMessage = document.getElementById('ending-message');
+        const restartButton = document.getElementById('restart');
 
-        function startGame() {
-            score = 0;
-            updateScore();
-            showScreen('game-screen');
-            createItems();
-            startTimer();
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function createItems() {
-            const container = document.getElementById('items-container');
-            container.innerHTML = '';
-            currentItems = [];
-
-            // Randomly select items
-            for(let i = 0; i < 6; i++) {
-                const item = wasteItems[Math.floor(Math.random() * wasteItems.length)];
-                currentItems.push(item);
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'waste-item';
-                itemElement.innerHTML = item.emoji;
-                itemElement.draggable = true;
-                itemElement.dataset.type = item.type;
-                
-                // Touch events
-                itemElement.addEventListener('touchstart', dragStart);
-                itemElement.addEventListener('touchmove', drag);
-                itemElement.addEventListener('touchend', dragEnd);
-                
-                // Mouse events
-                itemElement.addEventListener('mousedown', dragStart);
-                itemElement.addEventListener('mousemove', drag);
-                itemElement.addEventListener('mouseup', dragEnd);
-                
-                container.appendChild(itemElement);
+        function initGrid() {
+            gridEl.innerHTML = '';
+            grid.length = 0;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                grid[i] = [];
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    grid[i][j] = 'empty';
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.innerHTML = '<div class="icon"></div>';
+                    cell.addEventListener('click', handleCellClick);
+                    gridEl.appendChild(cell);
+                }
             }
         }
 
-        function startTimer() {
-            let timeLeft = gameTime;
-            const timerElement = document.querySelector('.timer');
-            
-            if (timer) clearInterval(timer);
-            
-            timerElement.textContent = timeLeft;
-            timerElement.className = 'timer';
-            
-            timer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-                
-                if (timeLeft <= 10) {
-                    timerElement.className = 'timer danger';
-                } else if (timeLeft <= 20) {
-                    timerElement.className = 'timer warning';
+        function handleCellClick(e) {
+            if (selectedType && grid[e.target.dataset.row][e.target.dataset.col] === 'empty') {
+                const cost = selectedType === 'renewable' ? 50 : 30;
+                if (money >= cost) {
+                    money -= cost;
+                    grid[e.target.dataset.row][e.target.dataset.col] = selectedType;
+                    e.target.classList.add(selectedType);
+                    updateMoney();
+                    messageEl.textContent = `Placed ${selectedType} energy source.`;
+                    selectedType = null;
+                } else {
+                    messageEl.textContent = 'Not enough money!';
                 }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        function dragStart(e) {
-            if (e.type === 'mousedown') {
-                draggingElement = e.target;
-                const rect = draggingElement.getBoundingClientRect();
-                draggingElement.style.position = 'fixed';
-                draggingElement.style.zIndex = 1000;
-                
-                function mouseMoveHandler(e) {
-                    drag(e);
-                }
-                
-                function mouseUpHandler(e) {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', mouseUpHandler);
-                    dragEnd(e);
-                }
-                
-                document.addEventListener('mousemove', mouseMoveHandler);
-                document.addEventListener('mouseup', mouseUpHandler);
-            } else if (e.type === 'touchstart') {
-                draggingElement = e.target;
-                const touch = e.touches[0];
-                const rect = draggingElement.getBoundingClientRect();
-                draggingElement.style.position = 'fixed';
-                draggingElement.style.zIndex = 1000;
             }
         }
 
-        function drag(e) {
-            if (!draggingElement) return;
-            
-            e.preventDefault();
-            
-            const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
-            const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
-            
-            draggingElement.style.left = clientX - draggingElement.offsetWidth / 2 + 'px';
-            draggingElement.style.top = clientY - draggingElement.offsetHeight / 2 + 'px';
-        }
-
-        function dragEnd(e) {
-            if (!draggingElement) return;
-            
-            const bins = document.querySelectorAll('.bin');
-            const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
-            const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
-            
-            let foundBin = false;
-            bins.forEach(bin => {
-                const rect = bin.getBoundingClientRect();
-                if (clientX >= rect.left && clientX <= rect.right &&
-                    clientY >= rect.top && clientY <= rect.bottom) {
-                    checkAnswer(draggingElement, bin);
-                    foundBin = true;
+        function countEnergy(type) {
+            let count = 0;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] === type) count++;
                 }
-            });
-            
-            if (!foundBin) {
-                draggingElement.style.position = '';
-                draggingElement.style.zIndex = '';
-                draggingElement.style.left = '';
-                draggingElement.style.top = '';
             }
-            
-            draggingElement = null;
+            return count;
         }
 
-        function checkAnswer(item, bin) {
-            const isCorrect = item.dataset.type === bin.dataset.type;
-            showFeedback(isCorrect);
-            
-            if (isCorrect) {
-                score += 10;
-                updateScore();
-                item.remove();
-                
-                // Check if all items are sorted
-                if (document.querySelectorAll('.waste-item').length === 0) {
-                    createItems();
+        function nextTurn() {
+            turns++;
+            const renewables = countEnergy('renewable');
+            const nonRenewables = countEnergy('non-renewable');
+
+            // Growth: Non-renewables give faster growth
+            const growth = renewables * 5 + nonRenewables * 10;
+            population += growth;
+            if (renewables > nonRenewables) {
+                population += 5; // Bonus for more renewables
+            }
+
+            // Pollution: Non-renewables increase pollution
+            pollution += nonRenewables * 10 - renewables * 2;
+            if (pollution < 0) pollution = 0;
+
+            // Earn money based on population
+            money += population / 10;
+
+            // Auto-build houses in empty cells if possible
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] === 'empty' && Math.random() < (growth / 100)) {
+                        grid[i][j] = 'building';
+                        const cell = gridEl.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                        cell.classList.add('building');
+                    }
                 }
+            }
+
+            updateUI();
+
+            // Check end conditions
+            if (pollution >= MAX_POLLUTION) {
+                endGame('polluted');
+            } else if (population >= GOAL_POPULATION) {
+                if (pollution < 30) {
+                    endGame('eco');
+                } else {
+                    endGame('balanced');
+                }
+            } else if (turns >= 20) {
+                endGame('timeout');
+            }
+        }
+
+        function updateUI() {
+            moneyEl.textContent = Math.floor(money);
+            pollutionFill.style.width = `${(pollution / MAX_POLLUTION) * 100}%`;
+            populationFill.style.width = `${(population / GOAL_POPULATION) * 100}%`;
+            messageEl.textContent = '';
+        }
+
+        function updateMoney() {
+            moneyEl.textContent = Math.floor(money);
+        }
+
+        function endGame(type) {
+            let msg = '';
+            if (type === 'polluted') {
+                msg = 'Polluted Wasteland: Your city is destroyed by pollution. Short-term gains led to long-term loss.';
+            } else if (type === 'eco') {
+                msg = 'Eco Paradise: Sustainable choices created a green utopia!';
+            } else if (type === 'balanced') {
+                msg = 'Balanced City: You grew the city but with some environmental cost. Can you do better?';
             } else {
-                item.style.position = '';
-                item.style.zIndex = '';
-                item.style.left = '';
-                item.style.top = '';
+                msg = 'Time Out: City didn\'t grow enough. Try again!';
             }
+            endingMessage.textContent = msg;
+            endScreen.style.display = 'block';
+            document.querySelector('.game-area').style.display = 'none';
         }
 
-        function showFeedback(isCorrect) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = isCorrect ? '✨ Great job! ✨' : '❌ Try again! ❌';
-            feedback.style.opacity = '1';
-            
-            setTimeout(() => {
-                feedback.style.opacity = '0';
-            }, 1000);
-        }
+        document.getElementById('build-renewable').addEventListener('click', () => {
+            selectedType = 'renewable';
+            messageEl.textContent = 'Select a grid cell to build renewable energy.';
+        });
 
-        function updateScore() {
-            document.querySelector('.score').textContent = `Score: ${score}`;
-        }
+        document.getElementById('build-non-renewable').addEventListener('click', () => {
+            selectedType = 'non-renewable';
+            messageEl.textContent = 'Select a grid cell to build non-renewable energy.';
+        });
 
-        function endGame() {
-            clearInterval(timer);
-            document.getElementById('end-screen').querySelector('.score').textContent = `Final Score: ${score}`;
-            
-            let message;
-            if (score >= 100) {
-                message = "Amazing! You're a recycling champion! 🌟";
-            } else if (score >= 70) {
-                message = "Great job! You're helping save the Earth! 🌍";
-            } else if (score >= 40) {
-                message = "Good effort! Keep practicing! 🌱";
-            } else {
-                message = "Keep trying! You'll be a recycling expert soon! 💪";
-            }
-            
-            document.getElementById('end-message').textContent = message;
-            showScreen('end-screen');
-        }
+        document.getElementById('next-turn').addEventListener('click', nextTurn);
 
-        // Prevent default drag behavior
-        document.addEventListener('dragstart', e => e.preventDefault());
+        restartButton.addEventListener('click', () => {
+            endScreen.style.display = 'none';
+            document.querySelector('.game-area').style.display = 'flex';
+            money = 100;
+            pollution = 0;
+            population = 0;
+            turns = 0;
+            initGrid();
+            updateUI();
+        });
+
+        initGrid();
     </script>
 </body>
 </html>
