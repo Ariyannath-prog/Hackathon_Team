@@ -147,8 +147,8 @@ section{
         }
 
         .progress-ring__progress {
-            stroke-dasharray: 326.73;
-            stroke-dashoffset: 326.73;
+            stroke-dasharray: 600;
+            stroke-dashoffset: 600;
             transition: stroke-dashoffset 2s ease-in-out;
         }
 
@@ -162,10 +162,10 @@ section{
             color: #333;
         }
 /* Progress colors */
-        .progress-75 { stroke: #28a745; }
-        .progress-38 { stroke: #ffc107; }
-        .progress-96 { stroke: #17a2b8; }
-        .progress-91 { stroke: #6f42c1; }
+        .progress-75 { stroke: #03ff3e; }
+        .progress-38 { stroke: #ffcc00; }
+        .progress-96 { stroke: #ff0000; }
+        .progress-91 { stroke: #00d0ff; }
 
 
 /* for games */
