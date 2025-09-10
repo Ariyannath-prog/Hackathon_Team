@@ -261,7 +261,6 @@ nav{
     display: flex;
     justify-content: center;
     align-items: center;
-    position: static;
 }
 .nav_btn{
     color: rgb(0, 0, 0);
@@ -270,25 +269,6 @@ nav{
     text-align: left;
     font-size: 3vmin;
     margin-left: 10px;
-}
-#search_bar{
-    width: 30vmin;
-    border: none;
-    height: 6vmin;
-    border-radius: 6px;
-    padding-left: 5px;
-    font-size: 3vmin;
-    margin-right: 10px;
-}
-#search_btn{
-    border: none;
-    height: 6vmin;
-    border-radius: 5px;
-    margin-right: 10px;
-    width: 12vmin;
-    font-size: 3vmin;
-    cursor: pointer;
-    background-color: white;
 }
 .nav_links {
     list-style: none;
@@ -309,7 +289,6 @@ nav{
     background: linear-gradient(90deg, #008080 0%, #2dce89 100%);
     box-shadow: 0 2px 12px rgba(44,62,80,0.08);
     padding: 0.5rem 0;
-    position: sticky;
     top: 0;
     z-index: 100;
     width: 100%;
