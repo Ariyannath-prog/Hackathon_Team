@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student GameZone - Play & Compete</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Student GameZone</div>
+            <nav id="nav-menu">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#games">Games</a></li>
+                    <li><a href="#leaderboard">Leaderboard</a></li>
+                    <li><a href="#login" class="btn">Login</a></li>
+                    <li><a href="#signup" class="btn">Sign Up</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Welcome to Student GameZone</h1>
+            <p>Play fun educational games, compete with friends, and climb the leaderboard!</p>
+            <a href="#games" class="btn">Start Playing</a>
+        </div>
+    </section>
+
+    <section id="games" class="games">
+        <div class="container">
+            <h2>Our Games</h2>
+            <div class="game-grid">
+                <div class="game-item">
+                    <h3>Math Blitz</h3>
+                    <p>Test your math skills in this fast-paced challenge!</p>
+                    <button class="btn play-btn" data-game="math-blitz">Play Now</button>
+                </div>
+                <div class="game-item">
+                    <h3>Word Quest</h3>
+                    <p>Build your vocabulary with exciting word puzzles.</p>
+                    <button class="btn play-btn" data-game="word-quest">Play Now</button>
+                </div>
+                <div class="game-item">
+                    <h3>Science Trivia</h3>
+                    <p>Compete in science-based trivia battles.</p>
+                    <button class="btn play-btn" data-game="science-trivia">Play Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="leaderboard" class="leaderboard">
+        <div class="container">
+            <h2>Leaderboard</h2>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>PlayerOne</td>
+                        <td>1200</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>MathStar</td>
+                        <td>1150</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>WordWizard</td>
+                        <td>1100</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>ScienceGuru</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>QuizKid</td>
+                        <td>950</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="login" class="form-section">
+        <div class="container">
+            <h2 class="title_line">Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username:</label>
+                    <input type="text" id="login-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="signup" class="form-section">
+        <div class="container">
+            <h2 class="title_line">Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-username">Username:</label>
+                    <input type="text" id="signup-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email:</label>
+                    <input type="email" id="signup-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password:</label>
+                    <input type="password" id="signup-password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Sign Up</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Student GameZone. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -190,3 +190,12 @@ footer {
         font-size: 18px;
     }
 }
+.log_title{
+    text-align: center;
+}
+.upload_files{
+    background-color: #1E90FF;
+    border-radius: 7px;
+    color: white;
+    cursor: pointer;
+}
