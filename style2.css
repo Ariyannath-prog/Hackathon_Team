@@ -437,3 +437,40 @@ nav{
         width: 100%;
     }
 }
+.social-icon{
+    width: 15px;
+    text-align: left;
+}
+.links_social{
+    display: flex;
+}
+.social_footer_link{
+    text-align: left;
+}
+.feedback {
+            display: flex;
+            justify-content: center;
+        }
+        
+.from {
+            width: 140px;
+            height: 30px;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto 30px;
+            background-color: #008080;
+            border-radius: 5px;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 128, 128, 0.2);
+        }
+        
+.from:hover {
+            background-color: #006666;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 128, 128, 0.3);
+        }
