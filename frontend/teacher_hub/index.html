@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's Hub - Empowering Educators</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Teacher's Hub</div>
+            <nav id="nav-menu">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#login" class="btn">Login</a></li>
+                    <li><a href="#signup" class="btn">Sign Up</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Welcome to Teacher's Hub</h1>
+            <p>Empower your teaching with tools to upload videos, photos, create quizzes, and share notes.</p>
+            <a href="#signup" class="btn">Get Started</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Our Features</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>Upload Content</h3>
+                    <p>Share videos, photos, and notes with your students seamlessly.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Custom Quizzes</h3>
+                    <p>Create interactive quizzes tailored to your curriculum.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Teacher Dashboard</h3>
+                    <p>Manage your resources and track student progress easily.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="login" class="form-section">
+        <div class="container">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="signup" class="form-section">
+        <div class="container">
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Full Name:</label>
+                    <input type="text" id="signup-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email:</label>
+                    <input type="email" id="signup-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password:</label>
+                    <input type="password" id="signup-password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Sign Up</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <h2>Teacher Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-item">
+                    <h3>Upload Video</h3>
+                    <input type="file" accept="video/*" id="video-upload">
+                </div>
+                <div class="dashboard-item">
+                    <h3>Upload Photo</h3>
+                    <input type="file" accept="image/*" id="photo-upload">
+                </div>
+                <div class="dashboard-item">
+                    <h3>Create Quiz</h3>
+                    <button class="btn" id="create-quiz">Start Quiz Builder</button>
+                </div>
+                <div class="dashboard-item">
+                    <h3>Upload Notes</h3>
+                    <input type="file" accept=".pdf,.doc,.docx" id="notes-upload">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to us!</p>
+            <a href="mailto:support@teachershub.org" class="btn">Contact Support</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Teacher's Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
