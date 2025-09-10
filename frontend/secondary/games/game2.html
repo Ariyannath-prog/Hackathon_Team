@@ -3,231 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pollution Cleaner</title>
+    <title>Eco Builder - Build Your Ecosystem</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #87ceeb;
-            overflow: hidden;
-        }
-        #game-container {
-            position: relative;
-            width: 80vw;
-            height: 80vh;
-            max-width: 400px;
-            max-height: 600px;
-            border: 2px solid #228b22;
-            border-radius: 10px;
-            background-color: #fff;
-            overflow: hidden;
-        }
-        #character {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 40px;
-            transition: left 0.2s;
-        }
-        .trash {
-            position: absolute;
-            font-size: 30px;
-            transition: top 0.1s linear;
-        }
-        #score {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 20px;
-        }
-        #timer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-        }
-        #controls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-between;
-            width: 150px;
-        }
-        .control-btn {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #1e90ff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .control-btn:hover {
-            background-color: #4169e1;
-        }
-        @media (min-width: 601px) {
-            #controls {
-                display: none; /* Hide buttons on desktop */
-            }
-        }
-        @media (max-width: 600px) {
-            #game-container {
-                width: 90vw;
-                height: 90vh;
-            }
-            #character {
-                font-size: 30px;
-            }
-            .trash {
-                font-size: 20px;
-            }
-            #score, #timer {
-                font-size: 18px;
-            }
-            .control-btn {
-                font-size: 16px;
-                padding: 8px 16px;
-            }
-        }
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f8f0;
+    color: #333;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 32px;
+    color: #228B22;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#gameCanvas {
+    border: 2px solid #228B22;
+    background-color: #e0f7e0;
+    display: block;
+    margin: 20px auto;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.tool-btn {
+    background-color: #228B22;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.tool-btn:hover {
+    background-color: #1a6e1a;
+}
+
+.score {
+    font-size: 18px;
+    padding: 10px;
+    background-color: #90EE90;
+    border-radius: 5px;
+}
+
+.instructions {
+    font-size: 14px;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tool-btn {
+        width: 80%;
+        margin: 5px 0;
+    }
+
+    .instructions {
+        font-size: 12px;
+    }
+}
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="character">🧑</div>
-        <div id="score">Score: 0</div>
-        <div id="timer">Time: 60</div>
-        <div id="controls">
-            <button class="control-btn" id="left">Left</button>
-            <button class="control-btn" id="right">Right</button>
+    <div class="container">
+        <h1>Eco Builder</h1>
+        <p>Build and maintain a balanced ecosystem! Earn sustainability points by keeping it thriving.</p>
+        <canvas id="gameCanvas"></canvas>
+        <div class="toolbar">
+            <button class="tool-btn" data-tool="tree">Plant Tree</button>
+            <button class="tool-btn" data-tool="water">Add Water</button>
+            <button class="tool-btn" data-tool="rabbit">Add Rabbit</button>
+            <button class="tool-btn" data-tool="fox">Add Fox</button>
+            <div class="score">Sustainability Points: <span id="score">0</span></div>
+        </div>
+        <div class="instructions">
+            <h3>How to Play</h3>
+            <p>Click to place trees, water, rabbits, or foxes on the grid. Balance is key—too many animals or not enough resources cause problems! Watch for droughts or overpopulation.</p>
         </div>
     </div>
     <script>
-        const container = document.getElementById('game-container');
-        const character = document.getElementById('character');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer');
-        const leftBtn = document.getElementById('left');
-        const rightBtn = document.getElementById('right');
+        const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
 
-        let charPos = 50; // Percentage from left
-        let score = 0;
-        let timeLeft = 60;
-        let gameOver = false;
-        let trashes = [];
-        const moveSpeed = 10; // Percentage move per key press
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-        const charWidth = character.clientWidth;
+const GRID_SIZE = 20;
+const CELL_SIZE = 30;
+canvas.width = GRID_SIZE * CELL_SIZE;
+canvas.height = GRID_SIZE * CELL_SIZE;
 
-        // Timer
-        const timerInterval = setInterval(() => {
-            if (!gameOver) {
-                timeLeft--;
-                timerDisplay.innerText = `Time: ${timeLeft}`;
-                if (timeLeft <= 0) {
-                    endGame();
+let grid = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(null));
+let selectedTool = null;
+let score = 0;
+let droughtTimer = 0;
+let populationCheck = 0;
+
+const tools = {
+    tree: { color: '#228B22', symbol: '🌳', resource: true },
+    water: { color: '#00CED1', symbol: '💧', resource: true },
+    rabbit: { color: '#FFA500', symbol: '🐰', population: 1 },
+    fox: { color: '#FF4500', symbol: '🦊', population: 2 }
+};
+
+canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
+    const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
+
+    if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && selectedTool) {
+        if (grid[y][x] === null) {
+            grid[y][x] = { ...tools[selectedTool], count: 0 };
+            updateScore(5); // Reward for placing
+            render();
+        }
+    }
+});
+
+document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        selectedTool = btn.dataset.tool;
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    });
+});
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+            if (grid[y][x]) {
+                ctx.fillStyle = grid[y][x].color;
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText(grid[y][x].symbol, x * CELL_SIZE + 10, y * CELL_SIZE + 20);
+                if (grid[y][x].population) {
+                    ctx.fillText(grid[y][x].count, x * CELL_SIZE + 10, y * CELL_SIZE + 35);
                 }
             }
-        }, 1000);
+        }
+    }
+}
 
-        // Create trash every 1 second
-        const trashInterval = setInterval(() => {
-            if (!gameOver) {
-                createTrash();
-            }
-        }, 1000);
+function updateEcosystem() {
+    let resources = 0;
+    let rabbits = 0;
+    let foxes = 0;
 
-        // Move trash down
-        const moveInterval = setInterval(() => {
-            if (!gameOver) {
-                moveTrash();
-            }
-        }, 100);
+    // Count current state
+    grid.forEach(row => {
+        row.forEach(cell => {
+            if (cell && cell.resource) resources++;
+            if (cell && cell.population === 1) rabbits += cell.count;
+            if (cell && cell.population === 2) foxes += cell.count;
+        });
+    });
 
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (!gameOver) {
-                if (e.key === 'ArrowLeft' && charPos > 0) {
-                    charPos -= moveSpeed;
-                } else if (e.key === 'ArrowRight' && charPos < 100) {
-                    charPos += moveSpeed;
+    // Simulate ecosystem dynamics
+    grid.forEach((row, y) => {
+        row.forEach((cell, x) => {
+            if (cell) {
+                if (cell.resource) {
+                    cell.count = Math.min(cell.count + 1, 5); // Resources grow slowly
+                } else if (cell.population) {
+                    if (cell.population === 1) { // Rabbits
+                        if (resources > 0 && Math.random() < 0.3) cell.count++;
+                        if (foxes > 0 && Math.random() < 0.2) cell.count--;
+                    } else if (cell.population === 2) { // Foxes
+                        if (rabbits > 0 && Math.random() < 0.4) cell.count++;
+                        if (rabbits < 2) cell.count--;
+                    }
+                    cell.count = Math.max(0, cell.count); // Prevent negative counts
                 }
-                updateCharPosition();
             }
         });
+    });
 
-        // Mobile buttons
-        leftBtn.addEventListener('click', () => {
-            if (!gameOver && charPos > 0) {
-                charPos -= moveSpeed;
-                updateCharPosition();
-            }
-        });
+    // Drought or overpopulation check
+    droughtTimer++;
+    populationCheck++;
+    if (droughtTimer > 200 && Math.random() < 0.1) {
+        resources = Math.max(0, resources - 2);
+        updateScore(-10);
+        droughtTimer = 0;
+    }
+    if (populationCheck > 100 && (rabbits > 10 || foxes > 5)) {
+        updateScore(-15);
+        populationCheck = 0;
+    }
 
-        rightBtn.addEventListener('click', () => {
-            if (!gameOver && charPos < 100) {
-                charPos += moveSpeed;
-                updateCharPosition();
-            }
-        });
+    render();
+}
 
-        function updateCharPosition() {
-            character.style.left = `${charPos}%`;
-        }
+function updateScore(points) {
+    score += points;
+    scoreElement.textContent = score;
+    if (score < 0) alert("Ecosystem unbalanced! Try adding more resources or balancing animals.");
+}
 
-        function createTrash() {
-            const trash = document.createElement('div');
-            trash.classList.add('trash');
-            trash.innerText = '🗑️';
-            trash.style.left = `${Math.random() * 90 + 5}%`; // Random position
-            trash.style.top = '0px';
-            container.appendChild(trash);
-            trashes.push(trash);
-        }
+function gameLoop() {
+    updateEcosystem();
+    requestAnimationFrame(gameLoop);
+}
 
-        function moveTrash() {
-            trashes.forEach((trash, index) => {
-                let top = parseInt(trash.style.top) || 0;
-                top += 5; // Move down
-                trash.style.top = `${top}px`;
-
-                // Check collision with character
-                const trashRect = trash.getBoundingClientRect();
-                const charRect = character.getBoundingClientRect();
-                if (
-                    trashRect.bottom >= charRect.top &&
-                    trashRect.top <= charRect.bottom &&
-                    trashRect.right >= charRect.left &&
-                    trashRect.left <= charRect.right
-                ) {
-                    score++;
-                    scoreDisplay.innerText = `Score: ${score}`;
-                    container.removeChild(trash);
-                    trashes.splice(index, 1);
-                } else if (top > containerHeight) {
-                    // Remove if off screen
-                    container.removeChild(trash);
-                    trashes.splice(index, 1);
-                }
-            });
-        }
-
-        function endGame() {
-            gameOver = true;
-            clearInterval(timerInterval);
-            clearInterval(trashInterval);
-            clearInterval(moveInterval);
-            alert(`Game Over! Your score: ${score}`);
-        }
-
-        updateCharPosition();
+gameLoop();
+render();
     </script>
 </body>
 </html>
